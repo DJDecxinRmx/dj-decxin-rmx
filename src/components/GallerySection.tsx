@@ -1,17 +1,12 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import gallery1 from "@/assets/gallery-1.jpg";
-import gallery2 from "@/assets/gallery-2.jpg";
-import gallery3 from "@/assets/gallery-3.jpg";
-
-const images = [
-  { src: gallery1, alt: "DJ Decxin en vivo - Público" },
-  { src: gallery2, alt: "DJ Decxin - Setup" },
-  { src: gallery3, alt: "DJ Decxin - Festival" },
-];
+import { useSite } from "@/context/SiteContext";
 
 const GallerySection = () => {
+  const { data } = useSite();
   const [selected, setSelected] = useState<number | null>(null);
+
+  if (data.gallery.length === 0) return null;
 
   return (
     <section className="px-4 py-12 max-w-2xl mx-auto">
@@ -21,13 +16,13 @@ const GallerySection = () => {
         viewport={{ once: true }}
         className="font-display text-xl tracking-widest neon-text-magenta text-center mb-8"
       >
-        GALERÍA
+        FOTOS
       </motion.h2>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {images.map((img, index) => (
+        {data.gallery.map((img, index) => (
           <motion.button
-            key={index}
+            key={img.id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -46,7 +41,6 @@ const GallerySection = () => {
         ))}
       </div>
 
-      {/* Lightbox */}
       {selected !== null && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -58,8 +52,8 @@ const GallerySection = () => {
           <motion.img
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            src={images[selected].src}
-            alt={images[selected].alt}
+            src={data.gallery[selected].src}
+            alt={data.gallery[selected].alt}
             className="max-w-full max-h-[85vh] rounded-lg neon-border-cyan border-2 border-primary"
           />
         </motion.div>
