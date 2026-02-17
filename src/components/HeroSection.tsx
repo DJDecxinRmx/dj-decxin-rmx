@@ -6,7 +6,7 @@ const HeroSection = () => {
   const { profile } = data;
 
   return (
-    <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+    <section id="hero" className="relative min-h-[70vh] flex items-center justify-center overflow-hidden pt-16">
       <div className="absolute inset-0">
         <img
           src={profile.bannerImage}

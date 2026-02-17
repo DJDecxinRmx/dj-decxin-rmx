@@ -8,7 +8,7 @@ const LinksSection = () => {
   if (data.links.length === 0) return null;
 
   return (
-    <section className="px-4 py-8 max-w-lg mx-auto">
+    <section id="links" className="px-4 py-12 max-w-lg mx-auto">
       <motion.h2
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
