@@ -6,7 +6,6 @@ const PostsSection = () => {
 
   if (data.posts.length === 0) return null;
 
-  // Auto-linkify URLs in text
   const renderContent = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = text.split(urlRegex);
@@ -46,18 +45,30 @@ const PostsSection = () => {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
-            className="glass rounded-lg p-4 border border-border"
+            className="glass rounded-lg overflow-hidden border border-border"
           >
-            <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-              {renderContent(post.content)}
-            </p>
-            <p className="text-xs text-muted-foreground mt-3 font-display tracking-wide">
-              {new Date(post.createdAt).toLocaleDateString("es", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
-            </p>
+            {post.image && (
+              <img
+                src={post.image}
+                alt=""
+                className="w-full h-48 object-cover"
+                loading="lazy"
+              />
+            )}
+            <div className="p-4">
+              {post.content && (
+                <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                  {renderContent(post.content)}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground mt-3 font-display tracking-wide">
+                {new Date(post.createdAt).toLocaleDateString("es", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </p>
+            </div>
           </motion.div>
         ))}
       </div>

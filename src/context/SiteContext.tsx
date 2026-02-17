@@ -16,11 +16,14 @@ export interface GalleryImage {
   id: string;
   src: string;
   alt: string;
+  description?: string;
+  link?: string;
 }
 
 export interface TextPost {
   id: string;
   content: string;
+  image?: string;
   createdAt: string;
 }
 
@@ -46,10 +49,13 @@ interface SiteContextType {
   addLink: (link: Omit<LinkItem, "id">) => void;
   removeLink: (id: string) => void;
   updateLink: (id: string, link: Partial<LinkItem>) => void;
-  addGalleryImage: (src: string, alt: string) => void;
+  addGalleryImage: (src: string, alt: string, description?: string, link?: string) => void;
   removeGalleryImage: (id: string) => void;
-  addPost: (content: string) => void;
+  addPost: (content: string, image?: string) => void;
   removePost: (id: string) => void;
+  adminPassword: string | null;
+  setAdminPassword: (pw: string) => void;
+  verifyPassword: (pw: string) => boolean;
 }
 
 const defaultData: SiteData = {
@@ -83,6 +89,7 @@ export const useSite = () => {
 };
 
 const STORAGE_KEY = "dj-decxin-site-data";
+const PASSWORD_KEY = "dj-decxin-admin-pw";
 
 const loadData = (): SiteData => {
   try {
@@ -95,12 +102,24 @@ const loadData = (): SiteData => {
 export const SiteProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<SiteData>(loadData);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPassword, setAdminPasswordState] = useState<string | null>(() => {
+    return localStorage.getItem(PASSWORD_KEY);
+  });
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }, [data]);
 
   const toggleAdmin = () => setIsAdmin((v) => !v);
+
+  const setAdminPassword = (pw: string) => {
+    setAdminPasswordState(pw);
+    localStorage.setItem(PASSWORD_KEY, pw);
+  };
+
+  const verifyPassword = (pw: string) => {
+    return adminPassword === pw;
+  };
 
   const updateProfile = (profile: ProfileData) =>
     setData((d) => ({ ...d, profile }));
@@ -117,19 +136,19 @@ export const SiteProvider = ({ children }: { children: ReactNode }) => {
       links: d.links.map((l) => (l.id === id ? { ...l, ...updates } : l)),
     }));
 
-  const addGalleryImage = (src: string, alt: string) =>
+  const addGalleryImage = (src: string, alt: string, description?: string, link?: string) =>
     setData((d) => ({
       ...d,
-      gallery: [...d.gallery, { id: crypto.randomUUID(), src, alt }],
+      gallery: [...d.gallery, { id: crypto.randomUUID(), src, alt, description, link }],
     }));
 
   const removeGalleryImage = (id: string) =>
     setData((d) => ({ ...d, gallery: d.gallery.filter((g) => g.id !== id) }));
 
-  const addPost = (content: string) =>
+  const addPost = (content: string, image?: string) =>
     setData((d) => ({
       ...d,
-      posts: [{ id: crypto.randomUUID(), content, createdAt: new Date().toISOString() }, ...d.posts],
+      posts: [{ id: crypto.randomUUID(), content, image, createdAt: new Date().toISOString() }, ...d.posts],
     }));
 
   const removePost = (id: string) =>
@@ -141,6 +160,7 @@ export const SiteProvider = ({ children }: { children: ReactNode }) => {
         data, isAdmin, toggleAdmin,
         updateProfile, addLink, removeLink, updateLink,
         addGalleryImage, removeGalleryImage, addPost, removePost,
+        adminPassword, setAdminPassword, verifyPassword,
       }}
     >
       {children}
