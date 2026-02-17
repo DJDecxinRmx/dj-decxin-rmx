@@ -28,7 +28,7 @@ const PostsSection = () => {
   };
 
   return (
-    <section className="px-4 py-8 max-w-lg mx-auto">
+    <section id="posts" className="px-4 py-12 max-w-lg mx-auto">
       <motion.h2
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}

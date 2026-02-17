@@ -9,7 +9,7 @@ const GallerySection = () => {
   if (data.gallery.length === 0) return null;
 
   return (
-    <section className="px-4 py-12 max-w-2xl mx-auto">
+    <section id="gallery" className="px-4 py-12 max-w-2xl mx-auto">
       <motion.h2
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
