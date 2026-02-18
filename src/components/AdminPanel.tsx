@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings, X, User, Link2, Image, FileText, Plus, Trash2, Lock, Upload } from "lucide-react";
+import { Settings, X, User, Link2, Image, FileText, Plus, Trash2, Lock, Upload, RefreshCw, Globe, Copy, Check } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
 
 const AdminPanel = () => {
@@ -40,6 +40,19 @@ const AdminPanel = () => {
   const [newPostContent, setNewPostContent] = useState("");
   const [newPostImage, setNewPostImage] = useState<string | null>(null);
   const postImageRef = useRef<HTMLInputElement>(null);
+  const [copied, setCopied] = useState(false);
+
+  const SITE_URL = "https://dj-decxin-showcase.lovable.app";
+
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(SITE_URL);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleRefreshPage = () => {
+    window.location.reload();
+  };
 
   const handleFileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve) => {
@@ -229,6 +242,37 @@ const AdminPanel = () => {
                         {t.label}
                       </button>
                     ))}
+                  </div>
+
+                  {/* Share & Refresh section - always visible */}
+                  <div className="mb-6 p-4 rounded-lg bg-muted/50 border border-border space-y-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Globe className="w-4 h-4 text-primary" />
+                      <p className="text-xs font-display tracking-wide text-foreground">TU PÁGINA EN VIVO</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        readOnly
+                        value={SITE_URL}
+                        className="flex-1 p-2 rounded-md bg-background border border-border text-xs text-primary font-mono truncate"
+                      />
+                      <button
+                        onClick={handleCopyUrl}
+                        className="shrink-0 p-2 rounded-md bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+                        title="Copiar enlace"
+                      >
+                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    <button
+                      onClick={handleRefreshPage}
+                      className="w-full py-2 rounded-lg bg-secondary text-secondary-foreground font-display tracking-wide text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+                    >
+                      <RefreshCw className="w-3 h-3" /> ACTUALIZAR PÁGINA
+                    </button>
+                    <p className="text-[10px] text-muted-foreground text-center">
+                      Comparte este enlace para que tus usuarios vean tu contenido actualizado
+                    </p>
                   </div>
 
                   {/* Profile tab */}
