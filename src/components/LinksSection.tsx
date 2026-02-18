@@ -29,10 +29,13 @@ const LinksSection = () => {
             whileInView={{ x: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1, duration: 0.4 }}
-            whileHover={{ scale: 1.03 }}
+            whileHover={{ scale: 1.03, boxShadow: "0 0 25px hsl(174 100% 50% / 0.4)" }}
             whileTap={{ scale: 0.97 }}
-            className="glass rounded-lg p-4 flex items-center gap-4 transition-all duration-300 hover:neon-border-cyan border border-border group"
+            className="glass rounded-lg p-4 flex items-center gap-4 transition-all duration-300 hover:neon-border-cyan border border-border group relative overflow-hidden"
           >
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            />
             <span className="text-primary group-hover:neon-text-cyan transition-all">
               <Link2 className="w-5 h-5" />
             </span>

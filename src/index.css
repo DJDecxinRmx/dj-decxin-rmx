@@ -92,4 +92,24 @@
     backdrop-filter: blur(16px);
     border: 1px solid hsl(240 10% 18% / 0.5);
   }
+
+  .animated-gradient-border {
+    background: linear-gradient(var(--angle, 0deg), hsl(var(--neon-cyan)), hsl(var(--neon-magenta)), hsl(var(--neon-cyan)));
+    animation: rotate-gradient 4s linear infinite;
+  }
+
+  @keyframes rotate-gradient {
+    to { --angle: 360deg; }
+  }
+
+  @property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--neon-cyan) / 0.4), hsl(var(--neon-magenta) / 0.4), transparent);
+  }
 }
