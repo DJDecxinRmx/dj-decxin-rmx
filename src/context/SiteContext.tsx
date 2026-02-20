@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";
@@ -44,41 +46,38 @@ interface SiteData {
 interface SiteContextType {
   data: SiteData;
   isAdmin: boolean;
-  toggleAdmin: () => void;
-  updateProfile: (profile: ProfileData) => void;
-  addLink: (link: Omit<LinkItem, "id">) => void;
-  removeLink: (id: string) => void;
-  updateLink: (id: string, link: Partial<LinkItem>) => void;
-  addGalleryImage: (src: string, alt: string, description?: string, link?: string) => void;
-  removeGalleryImage: (id: string) => void;
-  addPost: (content: string, image?: string) => void;
-  removePost: (id: string) => void;
-  adminPassword: string | null;
-  setAdminPassword: (pw: string) => void;
-  verifyPassword: (pw: string) => boolean;
+  user: User | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
+  updateProfile: (profile: ProfileData) => Promise<void>;
+  addLink: (link: Omit<LinkItem, "id">) => Promise<void>;
+  removeLink: (id: string) => Promise<void>;
+  addGalleryImage: (src: string, alt: string, description?: string, link?: string) => Promise<void>;
+  removeGalleryImage: (id: string) => Promise<void>;
+  addPost: (content: string, image?: string) => Promise<void>;
+  removePost: (id: string) => Promise<void>;
 }
 
-const defaultData: SiteData = {
-  profile: {
-    name: "DJ DECXIN RMX",
-    tagline: "Beats que mueven tu alma 🎧",
-    profileImage: profileImg,
-    bannerImage: heroImg,
-  },
-  links: [
-    { id: "1", title: "🎵 Mi Último Mix", url: "#", description: "Escucha mi sesión más reciente" },
-    { id: "2", title: "📺 YouTube", url: "#", description: "Videos y sets en vivo" },
-    { id: "3", title: "📸 Instagram", url: "#", description: "@djdecxinrmx" },
-    { id: "4", title: "🎧 SoundCloud", url: "#", description: "Todos mis tracks y remixes" },
-    { id: "5", title: "💬 WhatsApp", url: "#", description: "Contrataciones y contacto" },
-  ],
-  gallery: [
-    { id: "g1", src: gallery1, alt: "DJ Decxin en vivo" },
-    { id: "g2", src: gallery2, alt: "DJ Decxin - Setup" },
-    { id: "g3", src: gallery3, alt: "DJ Decxin - Festival" },
-  ],
-  posts: [],
+const defaultProfile: ProfileData = {
+  name: "DJ DECXIN RMX",
+  tagline: "Beats que mueven tu alma 🎧",
+  profileImage: profileImg,
+  bannerImage: heroImg,
 };
+
+const defaultLinks: LinkItem[] = [
+  { id: "1", title: "🎵 Mi Último Mix", url: "#", description: "Escucha mi sesión más reciente" },
+  { id: "2", title: "📺 YouTube", url: "#", description: "Videos y sets en vivo" },
+  { id: "3", title: "📸 Instagram", url: "#", description: "@djdecxinrmx" },
+  { id: "4", title: "🎧 SoundCloud", url: "#", description: "Todos mis tracks y remixes" },
+  { id: "5", title: "💬 WhatsApp", url: "#", description: "Contrataciones y contacto" },
+];
+
+const defaultGallery: GalleryImage[] = [
+  { id: "g1", src: gallery1, alt: "DJ Decxin en vivo" },
+  { id: "g2", src: gallery2, alt: "DJ Decxin - Setup" },
+  { id: "g3", src: gallery3, alt: "DJ Decxin - Festival" },
+];
 
 const SiteContext = createContext<SiteContextType | null>(null);
 
@@ -88,81 +87,151 @@ export const useSite = () => {
   return ctx;
 };
 
-const STORAGE_KEY = "dj-decxin-site-data";
-const PASSWORD_KEY = "dj-decxin-admin-pw";
-
-const loadData = (): SiteData => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch {}
-  return defaultData;
-};
-
 export const SiteProvider = ({ children }: { children: ReactNode }) => {
-  const [data, setData] = useState<SiteData>(loadData);
+  const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [adminPassword, setAdminPasswordState] = useState<string | null>(() => {
-    return localStorage.getItem(PASSWORD_KEY);
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<SiteData>({
+    profile: defaultProfile,
+    links: defaultLinks,
+    gallery: defaultGallery,
+    posts: [],
   });
 
+  // Auth listener
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [data]);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", currentUser.id)
+          .eq("role", "admin")
+          .maybeSingle();
+        setIsAdmin(!!roleData);
+      } else {
+        setIsAdmin(false);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
-  const toggleAdmin = () => setIsAdmin((v) => !v);
+  // Load all data from DB
+  useEffect(() => {
+    loadAllData();
+  }, []);
 
-  const setAdminPassword = (pw: string) => {
-    setAdminPasswordState(pw);
-    localStorage.setItem(PASSWORD_KEY, pw);
+  const loadAllData = async () => {
+    setLoading(true);
+    await Promise.all([loadProfile(), loadLinks(), loadGallery(), loadPosts()]);
+    setLoading(false);
   };
 
-  const verifyPassword = (pw: string) => {
-    return adminPassword === pw;
+  const loadProfile = async () => {
+    const { data: rows } = await supabase.from("site_settings").select("*").eq("key", "profile").maybeSingle();
+    if (rows?.value) {
+      setData((d) => ({ ...d, profile: rows.value as unknown as ProfileData }));
+    }
   };
 
-  const updateProfile = (profile: ProfileData) =>
-    setData((d) => ({ ...d, profile }));
+  const loadLinks = async () => {
+    const { data: rows } = await supabase.from("links").select("*").order("sort_order");
+    if (rows && rows.length > 0) {
+      setData((d) => ({
+        ...d,
+        links: rows.map((r) => ({ id: r.id, title: r.title, url: r.url, description: r.description || "" })),
+      }));
+    }
+  };
 
-  const addLink = (link: Omit<LinkItem, "id">) =>
-    setData((d) => ({ ...d, links: [...d.links, { ...link, id: crypto.randomUUID() }] }));
+  const loadGallery = async () => {
+    const { data: rows } = await supabase.from("gallery").select("*").order("sort_order");
+    if (rows && rows.length > 0) {
+      setData((d) => ({
+        ...d,
+        gallery: rows.map((r) => ({ id: r.id, src: r.image_url, alt: r.alt || "", description: r.description || undefined, link: r.link || undefined })),
+      }));
+    }
+  };
 
-  const removeLink = (id: string) =>
-    setData((d) => ({ ...d, links: d.links.filter((l) => l.id !== id) }));
+  const loadPosts = async () => {
+    const { data: rows } = await supabase.from("posts").select("*").order("created_at", { ascending: false });
+    if (rows && rows.length > 0) {
+      setData((d) => ({
+        ...d,
+        posts: rows.map((r) => ({ id: r.id, content: r.content, image: r.image_url || undefined, createdAt: r.created_at })),
+      }));
+    }
+  };
 
-  const updateLink = (id: string, updates: Partial<LinkItem>) =>
-    setData((d) => ({
-      ...d,
-      links: d.links.map((l) => (l.id === id ? { ...l, ...updates } : l)),
-    }));
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setIsAdmin(false);
+    setUser(null);
+  };
 
-  const addGalleryImage = (src: string, alt: string, description?: string, link?: string) =>
-    setData((d) => ({
-      ...d,
-      gallery: [...d.gallery, { id: crypto.randomUUID(), src, alt, description, link }],
-    }));
+  const updateProfile = async (profile: ProfileData) => {
+    const profileValue = profile as unknown as import("@/integrations/supabase/types").Json;
+    const { error } = await supabase.from("site_settings").upsert(
+      { key: "profile", value: profileValue, updated_at: new Date().toISOString() },
+      { onConflict: "key" }
+    );
+    if (!error) setData((d) => ({ ...d, profile }));
+  };
 
-  const removeGalleryImage = (id: string) =>
-    setData((d) => ({ ...d, gallery: d.gallery.filter((g) => g.id !== id) }));
+  const addLink = async (link: Omit<LinkItem, "id">) => {
+    const { data: row, error } = await supabase.from("links").insert({ title: link.title, url: link.url, description: link.description, sort_order: data.links.length }).select().single();
+    if (!error && row) {
+      setData((d) => ({
+        ...d,
+        links: [...d.links, { id: row.id, title: row.title, url: row.url, description: row.description || "" }],
+      }));
+    }
+  };
 
-  const addPost = (content: string, image?: string) =>
-    setData((d) => ({
-      ...d,
-      posts: [{ id: crypto.randomUUID(), content, image, createdAt: new Date().toISOString() }, ...d.posts],
-    }));
+  const removeLink = async (id: string) => {
+    const { error } = await supabase.from("links").delete().eq("id", id);
+    if (!error) setData((d) => ({ ...d, links: d.links.filter((l) => l.id !== id) }));
+  };
 
-  const removePost = (id: string) =>
-    setData((d) => ({ ...d, posts: d.posts.filter((p) => p.id !== id) }));
+  const addGalleryImage = async (src: string, alt: string, description?: string, link?: string) => {
+    const { data: row, error } = await supabase.from("gallery").insert({ image_url: src, alt, description, link, sort_order: data.gallery.length }).select().single();
+    if (!error && row) {
+      setData((d) => ({
+        ...d,
+        gallery: [...d.gallery, { id: row.id, src: row.image_url, alt: row.alt || "", description: row.description || undefined, link: row.link || undefined }],
+      }));
+    }
+  };
+
+  const removeGalleryImage = async (id: string) => {
+    const { error } = await supabase.from("gallery").delete().eq("id", id);
+    if (!error) setData((d) => ({ ...d, gallery: d.gallery.filter((g) => g.id !== id) }));
+  };
+
+  const addPost = async (content: string, image?: string) => {
+    const { data: row, error } = await supabase.from("posts").insert({ content, image_url: image || null }).select().single();
+    if (!error && row) {
+      setData((d) => ({
+        ...d,
+        posts: [{ id: row.id, content: row.content, image: row.image_url || undefined, createdAt: row.created_at }, ...d.posts],
+      }));
+    }
+  };
+
+  const removePost = async (id: string) => {
+    const { error } = await supabase.from("posts").delete().eq("id", id);
+    if (!error) setData((d) => ({ ...d, posts: d.posts.filter((p) => p.id !== id) }));
+  };
 
   return (
-    <SiteContext.Provider
-      value={{
-        data, isAdmin, toggleAdmin,
-        updateProfile, addLink, removeLink, updateLink,
-        addGalleryImage, removeGalleryImage, addPost, removePost,
-        adminPassword, setAdminPassword, verifyPassword,
-      }}
-    >
+    <SiteContext.Provider value={{
+      data, isAdmin, user, loading,
+      signOut, updateProfile, addLink, removeLink,
+      addGalleryImage, removeGalleryImage, addPost, removePost,
+    }}>
       {children}
     </SiteContext.Provider>
   );
