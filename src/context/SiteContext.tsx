@@ -98,6 +98,20 @@ export const SiteProvider = ({ children }: { children: ReactNode }) => {
     posts: [],
   });
 
+  // Realtime subscriptions
+  useEffect(() => {
+    const channel = supabase
+      .channel("site-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "gallery" }, () => loadGallery())
+      .on("postgres_changes", { event: "*", schema: "public", table: "links" }, () => loadLinks())
+      .on("postgres_changes", { event: "*", schema: "public", table: "posts" }, () => loadPosts())
+      .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, () => loadProfile())
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Auth listener
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
