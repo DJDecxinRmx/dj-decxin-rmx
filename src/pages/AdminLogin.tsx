@@ -30,12 +30,12 @@ const AdminLogin = () => {
           if (count === 0) {
             await supabase.from("user_roles").insert({ user_id: data.user.id, role: "admin" });
           }
-          navigate("/admin");
+          navigate("/");
         }
       } else {
         const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
         if (loginError) throw loginError;
-        navigate("/admin");
+        navigate("/");
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error al autenticar";
