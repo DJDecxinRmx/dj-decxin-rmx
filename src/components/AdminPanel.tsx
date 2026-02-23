@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const AdminPanel = () => {
   const {
     isAdmin, data, user,
-    updateProfile, addLink, removeLink,
+    updateProfile, addLink, updateLink, removeLink,
     addGalleryImage, removeGalleryImage,
     addPost, removePost, signOut,
   } = useSite();
@@ -83,12 +83,32 @@ const AdminPanel = () => {
     }
   };
 
+  // Link image upload ref
+  const linkImageRef = useRef<HTMLInputElement>(null);
+  const [newLinkImageFile, setNewLinkImageFile] = useState<File | null>(null);
+  const [newLinkImagePreview, setNewLinkImagePreview] = useState<string | null>(null);
+
+  const handleLinkImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setNewLinkImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setNewLinkImagePreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
   const handleAddLink = async () => {
     if (!newLinkTitle || !newLinkUrl) return;
     setUploading(true);
     try {
-      await addLink({ title: newLinkTitle, url: newLinkUrl, description: newLinkDesc });
+      let imageUrl: string | undefined;
+      if (newLinkImageFile) {
+        imageUrl = await uploadFile(newLinkImageFile, "site-assets", `links/${Date.now()}-${newLinkImageFile.name}`);
+      }
+      await addLink({ title: newLinkTitle, url: newLinkUrl, description: newLinkDesc, image: imageUrl });
       setNewLinkTitle(""); setNewLinkUrl(""); setNewLinkDesc("");
+      setNewLinkImageFile(null); setNewLinkImagePreview(null);
+      if (linkImageRef.current) linkImageRef.current.value = "";
     } finally {
       setUploading(false);
     }
@@ -285,6 +305,24 @@ const AdminPanel = () => {
                     <input value={newLinkTitle} onChange={(e) => setNewLinkTitle(e.target.value)} placeholder="Título del link" className={inputClass} />
                     <input value={newLinkUrl} onChange={(e) => setNewLinkUrl(e.target.value)} placeholder="URL (https://...)" className={inputClass} />
                     <input value={newLinkDesc} onChange={(e) => setNewLinkDesc(e.target.value)} placeholder="Descripción (opcional)" className={inputClass} />
+                    
+                    {/* Optional image for link */}
+                    <div>
+                      <label className="text-xs text-muted-foreground font-display tracking-wide mb-1 block">IMAGEN (OPCIONAL)</label>
+                      {newLinkImagePreview && (
+                        <div className="relative mb-2">
+                          <img src={newLinkImagePreview} alt="Preview" className="w-16 h-16 object-cover rounded-lg border border-border" />
+                          <button onClick={() => { setNewLinkImagePreview(null); setNewLinkImageFile(null); if (linkImageRef.current) linkImageRef.current.value = ""; }} className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs">
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                      <button onClick={() => linkImageRef.current?.click()} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted border border-border text-xs text-foreground hover:border-primary transition-colors">
+                        <Upload className="w-3 h-3" /> Subir imagen
+                      </button>
+                      <input ref={linkImageRef} type="file" accept="image/*" className="hidden" onChange={handleLinkImageSelect} />
+                    </div>
+
                     <button onClick={handleAddLink} disabled={uploading} className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-display tracking-wide text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50">
                       <Plus className="w-4 h-4" /> AGREGAR LINK
                     </button>
@@ -293,6 +331,9 @@ const AdminPanel = () => {
                     <p className="text-xs text-muted-foreground font-display tracking-wide mb-2">LINKS ACTUALES</p>
                     {data.links.map((link) => (
                       <div key={link.id} className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border">
+                        {link.image && (
+                          <img src={link.image} alt="" className="w-10 h-10 rounded-md object-cover border border-border shrink-0" />
+                        )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-foreground truncate">{link.title}</p>
                           <p className="text-xs text-muted-foreground truncate">{link.url}</p>

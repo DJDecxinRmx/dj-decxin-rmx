@@ -38,17 +38,24 @@ const GallerySection = () => {
         {data.gallery.map((img, index) => (
           <motion.div
             key={img.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.8, rotate: index % 2 === 0 ? -3 : 3 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: index * 0.15 }}
-            className="rounded-lg overflow-hidden border border-border hover:neon-border-cyan transition-all duration-300"
+            transition={{ delay: index * 0.12, type: "spring", stiffness: 100 }}
+            whileHover={{ 
+              scale: 1.05, 
+              rotate: 0,
+              boxShadow: "0 0 25px hsl(174 100% 50% / 0.4), 0 0 50px hsl(320 100% 60% / 0.2)",
+            }}
+            className="rounded-lg overflow-hidden border border-border hover:neon-border-cyan transition-all duration-300 group relative"
           >
+            {/* Glow overlay on hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
             <button
               onClick={() => setSelected(index)}
               className="w-full aspect-square"
             >
-              <img src={img.src} alt={img.alt} className="w-full h-full object-cover" loading="lazy" />
+              <img src={img.src} alt={img.alt} className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-500" loading="lazy" />
             </button>
             {(img.description || img.link) && (
               <div className="p-2 bg-muted/50">
