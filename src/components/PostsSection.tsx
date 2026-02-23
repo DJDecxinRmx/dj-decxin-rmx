@@ -41,19 +41,25 @@ const PostsSection = () => {
         {data.posts.map((post, index) => (
           <motion.div
             key={post.id}
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
+            initial={{ y: 30, opacity: 0, scale: 0.95 }}
+            whileInView={{ y: 0, opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
-            className="glass rounded-lg overflow-hidden border border-border"
+            transition={{ delay: index * 0.1, type: "spring", stiffness: 100 }}
+            whileHover={{ 
+              boxShadow: "0 0 20px hsl(320 100% 60% / 0.3), 0 0 40px hsl(174 100% 50% / 0.1)",
+            }}
+            className="glass rounded-lg overflow-hidden border border-border hover:border-secondary/50 transition-all duration-500 group"
           >
             {post.image && (
-              <img
-                src={post.image}
-                alt=""
-                className="w-full h-48 object-cover"
-                loading="lazy"
-              />
+              <div className="relative overflow-hidden">
+                <motion.img
+                  src={post.image}
+                  alt=""
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-700"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
             )}
             <div className="p-4">
               {post.content && (

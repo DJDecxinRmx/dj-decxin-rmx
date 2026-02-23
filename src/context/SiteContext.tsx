@@ -12,6 +12,7 @@ export interface LinkItem {
   title: string;
   url: string;
   description: string;
+  image?: string;
 }
 
 export interface GalleryImage {
@@ -51,6 +52,7 @@ interface SiteContextType {
   signOut: () => Promise<void>;
   updateProfile: (profile: ProfileData) => Promise<void>;
   addLink: (link: Omit<LinkItem, "id">) => Promise<void>;
+  updateLink: (id: string, updates: Partial<Omit<LinkItem, "id">>) => Promise<void>;
   removeLink: (id: string) => Promise<void>;
   addGalleryImage: (src: string, alt: string, description?: string, link?: string) => Promise<void>;
   removeGalleryImage: (id: string) => Promise<void>;
@@ -173,7 +175,7 @@ export const SiteProvider = ({ children }: { children: ReactNode }) => {
     if (rows && rows.length > 0) {
       setData((d) => ({
         ...d,
-        links: rows.map((r) => ({ id: r.id, title: r.title, url: r.url, description: r.description || "" })),
+        links: rows.map((r: any) => ({ id: r.id, title: r.title, url: r.url, description: r.description || "", image: r.image_url || undefined })),
       }));
     }
   };
@@ -214,11 +216,26 @@ export const SiteProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addLink = async (link: Omit<LinkItem, "id">) => {
-    const { data: row, error } = await supabase.from("links").insert({ title: link.title, url: link.url, description: link.description, sort_order: data.links.length }).select().single();
+    const { data: row, error } = await supabase.from("links").insert({ title: link.title, url: link.url, description: link.description, image_url: link.image || null, sort_order: data.links.length } as any).select().single();
     if (!error && row) {
       setData((d) => ({
         ...d,
-        links: [...d.links, { id: row.id, title: row.title, url: row.url, description: row.description || "" }],
+        links: [...d.links, { id: row.id, title: row.title, url: row.url, description: (row as any).description || "", image: (row as any).image_url || undefined }],
+      }));
+    }
+  };
+
+  const updateLink = async (id: string, updates: Partial<Omit<LinkItem, "id">>) => {
+    const dbUpdates: any = {};
+    if (updates.title !== undefined) dbUpdates.title = updates.title;
+    if (updates.url !== undefined) dbUpdates.url = updates.url;
+    if (updates.description !== undefined) dbUpdates.description = updates.description;
+    if (updates.image !== undefined) dbUpdates.image_url = updates.image || null;
+    const { error } = await supabase.from("links").update(dbUpdates).eq("id", id);
+    if (!error) {
+      setData((d) => ({
+        ...d,
+        links: d.links.map((l) => l.id === id ? { ...l, ...updates } : l),
       }));
     }
   };
@@ -261,7 +278,7 @@ export const SiteProvider = ({ children }: { children: ReactNode }) => {
   return (
     <SiteContext.Provider value={{
       data, isAdmin, user, loading,
-      signOut, updateProfile, addLink, removeLink,
+      signOut, updateProfile, addLink, updateLink, removeLink,
       addGalleryImage, removeGalleryImage, addPost, removePost,
     }}>
       {children}
