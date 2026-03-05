@@ -134,6 +134,10 @@ const PostsSection = () => {
                       day: "numeric",
                       month: "short",
                       year: "numeric",
+                    })}{" · "}
+                    {new Date(post.createdAt).toLocaleTimeString("es", {
+                      hour: "2-digit",
+                      minute: "2-digit",
                     })}
                   </p>
                   {/* Animated dot indicator */}

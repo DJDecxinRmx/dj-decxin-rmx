@@ -57,6 +57,7 @@ interface SiteContextType {
   addGalleryImage: (src: string, alt: string, description?: string, link?: string) => Promise<void>;
   removeGalleryImage: (id: string) => Promise<void>;
   addPost: (content: string, image?: string) => Promise<void>;
+  updatePost: (id: string, updates: { content?: string; image?: string }) => Promise<void>;
   removePost: (id: string) => Promise<void>;
 }
 
@@ -270,6 +271,19 @@ export const SiteProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updatePost = async (id: string, updates: { content?: string; image?: string }) => {
+    const dbUpdates: any = {};
+    if (updates.content !== undefined) dbUpdates.content = updates.content;
+    if (updates.image !== undefined) dbUpdates.image_url = updates.image || null;
+    const { error } = await supabase.from("posts").update(dbUpdates).eq("id", id);
+    if (!error) {
+      setData((d) => ({
+        ...d,
+        posts: d.posts.map((p) => p.id === id ? { ...p, ...updates } : p),
+      }));
+    }
+  };
+
   const removePost = async (id: string) => {
     const { error } = await supabase.from("posts").delete().eq("id", id);
     if (!error) setData((d) => ({ ...d, posts: d.posts.filter((p) => p.id !== id) }));
@@ -279,7 +293,7 @@ export const SiteProvider = ({ children }: { children: ReactNode }) => {
     <SiteContext.Provider value={{
       data, isAdmin, user, loading,
       signOut, updateProfile, addLink, updateLink, removeLink,
-      addGalleryImage, removeGalleryImage, addPost, removePost,
+      addGalleryImage, removeGalleryImage, addPost, updatePost, removePost,
     }}>
       {children}
     </SiteContext.Provider>
