@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings, X, User, Link2, Image, FileText, Plus, Trash2, Upload, RefreshCw, Globe, Copy, Check, LogOut, Loader2, ChevronDown, ChevronRight, Zap } from "lucide-react";
+import { Settings, X, User, Link2, Image, FileText, Plus, Trash2, Upload, RefreshCw, Globe, Copy, Check, LogOut, Loader2, ChevronDown, ChevronRight, Zap, Pencil, Save } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
 import { uploadFile } from "@/lib/supabase-helpers";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ const AdminPanel = () => {
     isAdmin, data, user,
     updateProfile, addLink, updateLink, removeLink,
     addGalleryImage, removeGalleryImage,
-    addPost, removePost, signOut,
+    addPost, updatePost, removePost, signOut,
   } = useSite();
 
   const navigate = useNavigate();
@@ -34,6 +34,12 @@ const AdminPanel = () => {
   const [newLinkUrl, setNewLinkUrl] = useState("");
   const [newLinkDesc, setNewLinkDesc] = useState("");
 
+  // Edit link state
+  const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
+  const [editLinkTitle, setEditLinkTitle] = useState("");
+  const [editLinkUrl, setEditLinkUrl] = useState("");
+  const [editLinkDesc, setEditLinkDesc] = useState("");
+
   // Gallery
   const [newImageAlt, setNewImageAlt] = useState("");
   const [newImageDesc, setNewImageDesc] = useState("");
@@ -46,6 +52,10 @@ const AdminPanel = () => {
   const [newPostImageFile, setNewPostImageFile] = useState<File | null>(null);
   const postImageRef = useRef<HTMLInputElement>(null);
   const [copied, setCopied] = useState(false);
+
+  // Edit post state
+  const [editingPostId, setEditingPostId] = useState<string | null>(null);
+  const [editPostContent, setEditPostContent] = useState("");
 
   const SITE_URL = "https://dj-decxin-showcase.lovable.app";
 
@@ -110,6 +120,22 @@ const AdminPanel = () => {
     } finally { setUploading(false); }
   };
 
+  const startEditLink = (link: typeof data.links[0]) => {
+    setEditingLinkId(link.id);
+    setEditLinkTitle(link.title);
+    setEditLinkUrl(link.url);
+    setEditLinkDesc(link.description);
+  };
+
+  const handleSaveEditLink = async () => {
+    if (!editingLinkId || !editLinkTitle || !editLinkUrl) return;
+    setUploading(true);
+    try {
+      await updateLink(editingLinkId, { title: editLinkTitle, url: editLinkUrl, description: editLinkDesc });
+      setEditingLinkId(null);
+    } finally { setUploading(false); }
+  };
+
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -145,6 +171,20 @@ const AdminPanel = () => {
     } finally { setUploading(false); }
   };
 
+  const startEditPost = (post: typeof data.posts[0]) => {
+    setEditingPostId(post.id);
+    setEditPostContent(post.content);
+  };
+
+  const handleSaveEditPost = async () => {
+    if (!editingPostId) return;
+    setUploading(true);
+    try {
+      await updatePost(editingPostId, { content: editPostContent });
+      setEditingPostId(null);
+    } finally { setUploading(false); }
+  };
+
   const handleSignOut = async () => {
     await signOut();
     setIsOpen(false);
@@ -160,7 +200,6 @@ const AdminPanel = () => {
     { key: "posts" as const, label: "Textos", icon: <FileText className="w-4 h-4" /> },
   ];
 
-  // Collapsible section header component
   const SectionHeader = ({ open, onToggle, icon, label, count }: { open: boolean; onToggle: () => void; icon: React.ReactNode; label: string; count?: number }) => (
     <button
       onClick={onToggle}
@@ -178,6 +217,10 @@ const AdminPanel = () => {
       </motion.div>
     </button>
   );
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString("es", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  };
 
   if (!isAdmin) {
     return (
@@ -246,7 +289,7 @@ const AdminPanel = () => {
                 {tabs.map((t) => (
                   <button
                     key={t.key}
-                    onClick={() => { setTab(t.key); setFormOpen(true); setListOpen(false); }}
+                    onClick={() => { setTab(t.key); setFormOpen(true); setListOpen(false); setEditingLinkId(null); setEditingPostId(null); }}
                     className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-1 rounded-md text-[11px] font-display tracking-wide transition-all ${
                       tab === t.key
                         ? "bg-primary text-primary-foreground shadow-[0_0_12px_hsl(174_100%_50%/0.3)]"
@@ -272,7 +315,7 @@ const AdminPanel = () => {
                 </motion.div>
               )}
 
-              {/* Share & Refresh - Collapsible */}
+              {/* Share & Refresh */}
               <Collapsible>
                 <CollapsibleTrigger asChild>
                   <button className="w-full flex items-center justify-between p-3 rounded-lg bg-muted/40 border border-border hover:border-primary/30 transition-all group">
@@ -386,17 +429,38 @@ const AdminPanel = () => {
                     {listOpen && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden space-y-2">
                         {data.links.map((link, i) => (
-                          <motion.div key={link.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 border border-border hover:border-primary/30 transition-all group">
-                            {link.image && (
-                              <img src={link.image} alt="" className="w-10 h-10 rounded-md object-cover border border-border shrink-0" />
+                          <motion.div key={link.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="p-3 rounded-lg bg-muted/30 border border-border hover:border-primary/30 transition-all">
+                            {editingLinkId === link.id ? (
+                              <div className="space-y-2">
+                                <input value={editLinkTitle} onChange={(e) => setEditLinkTitle(e.target.value)} placeholder="Título" className={`${inputClass} !p-2 !text-xs`} />
+                                <input value={editLinkUrl} onChange={(e) => setEditLinkUrl(e.target.value)} placeholder="URL" className={`${inputClass} !p-2 !text-xs`} />
+                                <input value={editLinkDesc} onChange={(e) => setEditLinkDesc(e.target.value)} placeholder="Descripción" className={`${inputClass} !p-2 !text-xs`} />
+                                <div className="flex gap-2">
+                                  <button onClick={handleSaveEditLink} disabled={uploading} className="flex-1 py-2 rounded-lg bg-primary text-primary-foreground text-[11px] font-display tracking-wide flex items-center justify-center gap-1.5 hover:opacity-90 disabled:opacity-50">
+                                    <Save className="w-3 h-3" /> GUARDAR
+                                  </button>
+                                  <button onClick={() => setEditingLinkId(null)} className="px-3 py-2 rounded-lg bg-muted border border-border text-[11px] text-muted-foreground hover:text-foreground transition-colors">
+                                    CANCELAR
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                {link.image && (
+                                  <img src={link.image} alt="" className="w-10 h-10 rounded-md object-cover border border-border shrink-0" />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-foreground truncate">{link.title}</p>
+                                  <p className="text-[10px] text-muted-foreground truncate">{link.url}</p>
+                                </div>
+                                <button onClick={() => startEditLink(link)} className="text-muted-foreground hover:text-primary transition-colors shrink-0 p-1.5 rounded-md hover:bg-primary/10" title="Editar">
+                                  <Pencil className="w-4 h-4" />
+                                </button>
+                                <button onClick={() => removeLink(link.id)} className="text-muted-foreground hover:text-destructive transition-colors shrink-0 p-1.5 rounded-md hover:bg-destructive/10" title="Eliminar">
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
                             )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm text-foreground truncate">{link.title}</p>
-                              <p className="text-[10px] text-muted-foreground truncate">{link.url}</p>
-                            </div>
-                            <button onClick={() => removeLink(link.id)} className="text-muted-foreground hover:text-destructive transition-colors shrink-0 p-1.5 rounded-md hover:bg-destructive/10">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
                           </motion.div>
                         ))}
                         {data.links.length === 0 && <p className="text-xs text-muted-foreground text-center py-3">No hay links aún</p>}
@@ -488,18 +552,44 @@ const AdminPanel = () => {
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden space-y-2">
                         {data.posts.map((post, i) => (
                           <motion.div key={post.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="p-3 rounded-lg bg-muted/30 border border-border hover:border-primary/30 transition-all">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex-1 min-w-0">
-                                {post.image && <img src={post.image} alt="" className="w-full h-20 object-cover rounded-md mb-2 border border-border" />}
-                                <p className="text-xs text-foreground whitespace-pre-wrap line-clamp-3">{post.content}</p>
+                            {editingPostId === post.id ? (
+                              <div className="space-y-2">
+                                <textarea
+                                  value={editPostContent}
+                                  onChange={(e) => setEditPostContent(e.target.value)}
+                                  rows={4}
+                                  className={`${inputClass} resize-none !text-xs`}
+                                />
+                                <div className="flex gap-2">
+                                  <button onClick={handleSaveEditPost} disabled={uploading} className="flex-1 py-2 rounded-lg bg-primary text-primary-foreground text-[11px] font-display tracking-wide flex items-center justify-center gap-1.5 hover:opacity-90 disabled:opacity-50">
+                                    <Save className="w-3 h-3" /> GUARDAR
+                                  </button>
+                                  <button onClick={() => setEditingPostId(null)} className="px-3 py-2 rounded-lg bg-muted border border-border text-[11px] text-muted-foreground hover:text-foreground transition-colors">
+                                    CANCELAR
+                                  </button>
+                                </div>
                               </div>
-                              <button onClick={() => removePost(post.id)} className="text-muted-foreground hover:text-destructive transition-colors shrink-0 p-1.5 rounded-md hover:bg-destructive/10">
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground mt-1.5">
-                              {new Date(post.createdAt).toLocaleDateString("es")}
-                            </p>
+                            ) : (
+                              <>
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="flex-1 min-w-0">
+                                    {post.image && <img src={post.image} alt="" className="w-full h-20 object-cover rounded-md mb-2 border border-border" />}
+                                    <p className="text-xs text-foreground whitespace-pre-wrap line-clamp-3">{post.content}</p>
+                                  </div>
+                                  <div className="flex flex-col gap-1 shrink-0">
+                                    <button onClick={() => startEditPost(post)} className="text-muted-foreground hover:text-primary transition-colors p-1.5 rounded-md hover:bg-primary/10" title="Editar">
+                                      <Pencil className="w-4 h-4" />
+                                    </button>
+                                    <button onClick={() => removePost(post.id)} className="text-muted-foreground hover:text-destructive transition-colors p-1.5 rounded-md hover:bg-destructive/10" title="Eliminar">
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                </div>
+                                <p className="text-[10px] text-muted-foreground mt-1.5">
+                                  {formatDate(post.createdAt)}
+                                </p>
+                              </>
+                            )}
                           </motion.div>
                         ))}
                         {data.posts.length === 0 && <p className="text-xs text-muted-foreground text-center py-3">No hay publicaciones aún</p>}
