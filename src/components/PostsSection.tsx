@@ -141,13 +141,13 @@ const PostsSection = () => {
                       minute: "2-digit",
                     })}
                   </p>
-                  {/* Animated dot indicator */}
                   <motion.div
                     className="w-1.5 h-1.5 rounded-full bg-secondary"
                     animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.2, 0.8] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                   />
                 </div>
+                <PostInteractions postId={post.id} />
               </div>
 
               {/* Bottom neon line */}
