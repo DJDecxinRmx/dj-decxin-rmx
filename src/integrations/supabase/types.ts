@@ -74,6 +74,70 @@ export type Database = {
         }
         Relationships: []
       }
+      post_comments: {
+        Row: {
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+        }
+        Insert: {
+          author_name?: string
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+        }
+        Update: {
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_ratings: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          rating: number
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          rating: number
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          rating?: number
+          visitor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_ratings_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           content: string
