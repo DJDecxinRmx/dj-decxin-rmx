@@ -11,6 +11,7 @@ const LiveClock = () => {
   }, []);
 
   const dateStr = now.toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const timeStr = now.toLocaleTimeString("es", { hour: "numeric", minute: "2-digit", hour12: true });
 
   return (
     <motion.div
@@ -22,7 +23,7 @@ const LiveClock = () => {
       <div className="flex items-center gap-2">
         <Calendar className="w-4 h-4 text-primary" />
         <p className="text-sm text-muted-foreground font-display tracking-wider capitalize">
-          {dateStr}
+          {dateStr} · {timeStr}
         </p>
       </div>
       <motion.div
