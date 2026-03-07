@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ExternalLink, MessageSquare } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
+import PostInteractions from "./PostInteractions";
 
 const PostsSection = () => {
   const { data } = useSite();
