@@ -78,7 +78,7 @@ const AdminPanel = () => {
           >
             <AdminHeader user={user} onSignOut={handleSignOut} onClose={() => setIsOpen(false)} tab={tab} setTab={setTab} resetEdit={() => {}} />
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin pb-32">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin pb-32 min-h-0">
               {uploading && (
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/30 text-xs text-primary font-display tracking-wide">
                   <Loader2 className="w-4 h-4 animate-spin" /> Guardando...

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, MessageSquare, Send, Trash2 } from "lucide-react";
+import { Star, MessageSquare, Send, Trash2, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSite } from "@/context/SiteContext";
 
@@ -80,12 +80,14 @@ const StarRating = ({ postId }: { postId: string }) => {
 };
 
 const PostComments = ({ postId }: { postId: string }) => {
-  const { isAdmin } = useSite();
+  const { isAdmin, user } = useSite();
   const [comments, setComments] = useState<Comment[]>([]);
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
+
+  const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || "Usuario";
 
   const loadComments = useCallback(async () => {
     const { data } = await supabase
@@ -107,12 +109,20 @@ const PostComments = ({ postId }: { postId: string }) => {
     return () => { supabase.removeChannel(channel); };
   }, [postId, loadComments]);
 
+  const handleSignInWithGoogle = async () => {
+    setSigningIn(true);
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin },
+    });
+  };
+
   const handleSubmit = async () => {
-    if (!text.trim()) return;
+    if (!text.trim() || !user) return;
     setSending(true);
     await supabase.from("post_comments").insert({
       post_id: postId,
-      author_name: name.trim() || "Anónimo",
+      author_name: userName,
       content: text.trim(),
     });
     setText("");
@@ -168,31 +178,39 @@ const PostComments = ({ postId }: { postId: string }) => {
                 </motion.div>
               ))}
 
-              {/* New comment form */}
-              <div className="flex flex-col gap-2 pt-1">
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Tu nombre (opcional)"
-                  className="w-full p-2 rounded-lg bg-background/80 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-                />
-                <div className="flex gap-2">
-                  <input
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                    placeholder="Escribe un comentario..."
-                    className="flex-1 p-2 rounded-lg bg-background/80 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-                  />
-                  <button
-                    onClick={handleSubmit}
-                    disabled={sending || !text.trim()}
-                    className="px-3 rounded-lg bg-primary text-primary-foreground disabled:opacity-40 hover:opacity-90 transition-opacity"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                  </button>
+              {/* Comment form or sign-in prompt */}
+              {user ? (
+                <div className="flex flex-col gap-2 pt-1">
+                  <p className="text-[10px] text-muted-foreground font-display tracking-wide">
+                    Comentando como <span className="text-primary">{userName}</span>
+                  </p>
+                  <div className="flex gap-2">
+                    <input
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                      placeholder="Escribe un comentario..."
+                      className="flex-1 p-2 rounded-lg bg-background/80 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                    />
+                    <button
+                      onClick={handleSubmit}
+                      disabled={sending || !text.trim()}
+                      className="px-3 rounded-lg bg-primary text-primary-foreground disabled:opacity-40 hover:opacity-90 transition-opacity"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <button
+                  onClick={handleSignInWithGoogle}
+                  disabled={signingIn}
+                  className="w-full flex items-center justify-center gap-2 p-2.5 rounded-lg bg-muted/50 border border-border text-xs text-muted-foreground hover:text-primary hover:border-primary/40 transition-all"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span className="font-display tracking-wide">Inicia sesión con Google para comentar</span>
+                </button>
+              )}
             </div>
           </motion.div>
         )}
