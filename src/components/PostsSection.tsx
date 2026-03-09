@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ExternalLink, MessageSquare } from "lucide-react";
+import { ExternalLink, MessageSquare, Download } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
 import PostInteractions from "./PostInteractions";
 
@@ -61,7 +61,7 @@ const PostsSection = () => {
       <div className="flex flex-col gap-5">
         {data.posts.map((post, index) => {
           const firstUrl = extractFirstUrl(post.content);
-          const imageIsLink = !!post.image && !!firstUrl;
+          const hasImageAndLink = !!post.image && !!firstUrl;
 
           return (
             <motion.div
@@ -83,10 +83,10 @@ const PostsSection = () => {
                 <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,hsl(320_100%_60%/0.02)_2px,hsl(320_100%_60%/0.02)_4px)]" />
               </div>
 
-              {/* Image - clickable if there's a URL */}
+              {/* Image with download-style link disguise */}
               {post.image && (
                 <div className="relative overflow-hidden">
-                  {imageIsLink ? (
+                  {hasImageAndLink ? (
                     <a href={firstUrl!} target="_blank" rel="noopener noreferrer" className="block relative">
                       <motion.img
                         src={post.image}
@@ -95,17 +95,28 @@ const PostsSection = () => {
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/20 to-transparent" />
-                      {/* Link indicator badge */}
+                      {/* Download-style badge */}
                       <motion.div
-                        className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full glass border border-primary/50 text-primary"
+                        className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border border-primary/60 text-primary shadow-[0_0_12px_hsl(174_100%_50%/0.3)]"
                         initial={{ opacity: 0, scale: 0.8 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.3 }}
                         whileHover={{ scale: 1.1 }}
                       >
-                        <ExternalLink className="w-3 h-3" />
-                        <span className="text-[10px] font-display tracking-wider">ABRIR</span>
+                        <Download className="w-3.5 h-3.5" />
+                        <span className="text-[10px] font-display tracking-wider font-bold">DESCARGAR</span>
+                      </motion.div>
+                      {/* Bottom download bar */}
+                      <motion.div
+                        className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 py-2 bg-primary/20 backdrop-blur-sm border-t border-primary/30"
+                        initial={{ y: 10, opacity: 0 }}
+                        whileInView={{ y: 0, opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.4 }}
+                      >
+                        <Download className="w-3 h-3 text-primary" />
+                        <span className="text-[10px] font-display tracking-widest text-primary">TOCA PARA DESCARGAR</span>
                       </motion.div>
                     </a>
                   ) : (
