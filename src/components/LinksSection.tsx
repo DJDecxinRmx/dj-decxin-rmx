@@ -34,7 +34,7 @@ const LinksSection = () => {
               boxShadow: "0 0 30px hsl(174 100% 50% / 0.4), 0 0 60px hsl(320 100% 60% / 0.15)",
             }}
             whileTap={{ scale: 0.97 }}
-            className="glass rounded-xl overflow-hidden transition-all duration-300 hover:neon-border-cyan border border-border group relative"
+            className="glass rounded-xl overflow-hidden transition-all duration-300 hover:neon-border-cyan border border-border group relative neon-border-animated neon-border-animated-subtle"
           >
             {/* Animated gradient background on hover */}
             <motion.div

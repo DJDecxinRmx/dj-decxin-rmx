@@ -47,7 +47,7 @@ const GallerySection = () => {
               rotate: 0,
               boxShadow: "0 0 25px hsl(174 100% 50% / 0.4), 0 0 50px hsl(320 100% 60% / 0.2)",
             }}
-            className="rounded-lg overflow-hidden border border-border hover:neon-border-cyan transition-all duration-300 group relative"
+            className="rounded-lg overflow-hidden border border-border hover:neon-border-cyan transition-all duration-300 group relative neon-border-animated neon-border-animated-subtle"
           >
             {/* Glow overlay on hover */}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
