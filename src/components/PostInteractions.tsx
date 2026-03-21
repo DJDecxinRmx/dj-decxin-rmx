@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -44,13 +43,12 @@ const PostInteractions = ({ postId }: { postId: string }) => {
     <div className="flex items-center gap-2">
       <div className="flex gap-0.5">
         {[1, 2, 3, 4, 5].map((heart) => (
-          <motion.button
+          <button
             key={heart}
             onMouseEnter={() => setHover(heart)}
             onMouseLeave={() => setHover(0)}
             onClick={() => handleRate(heart)}
-            whileTap={{ scale: 1.4 }}
-            className="p-0.5 transition-transform hover:scale-125"
+            className="p-0.5 transition-transform hover:scale-125 active:scale-140"
           >
             <Heart
               className={`w-4 h-4 transition-colors ${
@@ -61,7 +59,7 @@ const PostInteractions = ({ postId }: { postId: string }) => {
                   : "text-muted-foreground/40"
               }`}
             />
-          </motion.button>
+          </button>
         ))}
       </div>
       <span className="text-[10px] text-muted-foreground font-mono">
