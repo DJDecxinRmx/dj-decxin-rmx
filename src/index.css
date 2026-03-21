@@ -126,14 +126,14 @@
   .neon-border-animated::before {
     content: '';
     position: absolute;
-    inset: -1px;
+    inset: -2px;
     border-radius: inherit;
-    padding: 1px;
+    padding: 2px;
     background: conic-gradient(
       from var(--border-angle),
-      transparent 25%,
-      hsl(174 100% 50% / 0.8) 50%,
-      transparent 75%
+      transparent 20%,
+      hsl(174 100% 50% / 1) 50%,
+      transparent 80%
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -142,38 +142,19 @@
     pointer-events: none;
     will-change: --border-angle;
     z-index: 0;
+    filter: drop-shadow(0 0 6px hsl(174 100% 50% / 0.7));
   }
 
   .neon-border-animated-subtle::before {
     background: conic-gradient(
       from var(--border-angle),
-      transparent 30%,
-      hsl(174 100% 50% / 0.4) 50%,
-      transparent 70%
+      transparent 25%,
+      hsl(174 100% 50% / 0.9) 50%,
+      transparent 75%
     );
+    filter: drop-shadow(0 0 4px hsl(174 100% 50% / 0.5));
   }
 
-  .page-border-animated::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 50;
-    border: 2px solid transparent;
-    background: conic-gradient(
-      from var(--border-angle),
-      transparent 20%,
-      hsl(174 100% 50% / 0.5) 35%,
-      hsl(174 100% 50% / 0.9) 50%,
-      hsl(174 100% 50% / 0.5) 65%,
-      transparent 80%
-    ) border-box;
-    -webkit-mask: linear-gradient(transparent 0 0) padding-box, linear-gradient(#fff 0 0) border-box;
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: spin-border 4s linear infinite;
-    will-change: --border-angle;
-  }
 
   .section-divider {
     height: 1px;
