@@ -15,7 +15,7 @@ const SectionDivider = () => <div className="section-divider max-w-xs mx-auto my
 const Index = () => {
   return (
     <SiteProvider>
-      <div className="min-h-screen bg-background relative page-border-animated">
+      <div className="min-h-screen bg-background relative">
         <ParticlesBackground />
         <Navbar />
         <HeroSection />
