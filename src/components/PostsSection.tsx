@@ -73,7 +73,7 @@ const PostsSection = () => {
               whileHover={{
                 boxShadow: "0 0 25px hsl(320 100% 60% / 0.35), 0 0 50px hsl(174 100% 50% / 0.15)",
               }}
-              className="glass rounded-xl overflow-hidden border border-border hover:border-secondary/50 transition-all duration-500 group relative"
+              className="glass rounded-xl overflow-hidden border border-border hover:border-secondary/50 transition-all duration-500 group relative neon-border-animated neon-border-animated-subtle"
             >
               {/* Animated gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
