@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 const sections = [
@@ -14,21 +14,27 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 40);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const scrollTo = (id: string) => {
+  const scrollTo = useCallback((id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMobileOpen(false);
-  };
+  }, []);
 
   return (
-    <motion.nav
-      initial={{ y: -80 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, type: "spring" }}
+    <nav
       className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${
         scrolled ? "glass shadow-lg" : "bg-transparent"
       }`}
@@ -38,7 +44,6 @@ const Navbar = () => {
           DECXIN
         </button>
 
-        {/* Desktop */}
         <div className="hidden md:flex items-center gap-6">
           {sections.map((s) => (
             <button
@@ -52,13 +57,11 @@ const Navbar = () => {
           <EqualizerBars />
         </div>
 
-        {/* Mobile toggle */}
         <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-primary">
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -81,18 +84,17 @@ const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </nav>
   );
 };
 
 const EqualizerBars = () => (
   <div className="flex items-end gap-[3px] h-4">
-    {[0, 0.2, 0.1, 0.3, 0.15].map((delay, i) => (
-      <motion.div
+    {[0, 1, 2, 3, 4].map((i) => (
+      <div
         key={i}
-        className="w-[3px] bg-primary rounded-full"
-        animate={{ height: ["4px", "16px", "8px", "14px", "4px"] }}
-        transition={{ duration: 1.2, repeat: Infinity, delay, ease: "easeInOut" }}
+        className="w-[3px] bg-primary rounded-full animate-equalizer"
+        style={{ animationDelay: `${i * 0.15}s` }}
       />
     ))}
   </div>
