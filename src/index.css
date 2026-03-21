@@ -108,6 +108,73 @@
     inherits: false;
   }
 
+  @property --border-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes spin-border {
+    to { --border-angle: 360deg; }
+  }
+
+  .neon-border-animated {
+    position: relative;
+    overflow: visible;
+  }
+
+  .neon-border-animated::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--border-angle),
+      transparent 25%,
+      hsl(174 100% 50% / 0.8) 50%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: spin-border 3s linear infinite;
+    pointer-events: none;
+    will-change: --border-angle;
+    z-index: 0;
+  }
+
+  .neon-border-animated-subtle::before {
+    background: conic-gradient(
+      from var(--border-angle),
+      transparent 30%,
+      hsl(174 100% 50% / 0.4) 50%,
+      transparent 70%
+    );
+  }
+
+  .page-border-animated::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    border: 2px solid transparent;
+    background: conic-gradient(
+      from var(--border-angle),
+      transparent 20%,
+      hsl(174 100% 50% / 0.5) 35%,
+      hsl(174 100% 50% / 0.9) 50%,
+      hsl(174 100% 50% / 0.5) 65%,
+      transparent 80%
+    ) border-box;
+    -webkit-mask: linear-gradient(transparent 0 0) padding-box, linear-gradient(#fff 0 0) border-box;
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: spin-border 4s linear infinite;
+    will-change: --border-angle;
+  }
+
   .section-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, hsl(var(--neon-cyan) / 0.4), hsl(var(--neon-magenta) / 0.4), transparent);
