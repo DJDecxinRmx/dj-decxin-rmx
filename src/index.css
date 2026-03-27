@@ -93,18 +93,7 @@
   }
 
   .animated-gradient-border {
-    background: linear-gradient(var(--angle, 0deg), hsl(var(--neon-cyan)), hsl(var(--neon-magenta)), hsl(var(--neon-cyan)));
-    animation: rotate-gradient 4s linear infinite;
-  }
-
-  @keyframes rotate-gradient {
-    to { --angle: 360deg; }
-  }
-
-  @property --angle {
-    syntax: "<angle>";
-    initial-value: 0deg;
-    inherits: false;
+    background: linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-magenta)), hsl(var(--neon-cyan)));
   }
 
 
