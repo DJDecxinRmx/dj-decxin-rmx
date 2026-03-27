@@ -40,7 +40,7 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
-        <button onClick={() => scrollTo("hero")} className="font-display text-sm tracking-widest neon-text-cyan">
+        <button onClick={() => scrollTo("hero")} className="font-display text-sm tracking-widest neon-text-cyan ml-12">
           DECXIN
         </button>
 

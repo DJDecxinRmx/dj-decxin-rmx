@@ -107,15 +107,6 @@
     inherits: false;
   }
 
-  @property --border-angle {
-    syntax: "<angle>";
-    initial-value: 0deg;
-    inherits: false;
-  }
-
-  @keyframes spin-border {
-    to { --border-angle: 360deg; }
-  }
 
   .neon-border-animated {
     box-shadow: 0 0 8px hsl(174 100% 50% / 0.4), inset 0 0 8px hsl(174 100% 50% / 0.05);

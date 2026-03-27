@@ -1,21 +1,11 @@
-import { motion } from "framer-motion";
 import { useSite } from "@/context/SiteContext";
-import { useMemo } from "react";
 
 const HeroSection = () => {
   const { data } = useSite();
   const { profile } = data;
 
-  const bars = useMemo(() =>
-    Array.from({ length: 12 }, (_, i) => ({
-      i,
-      isCyan: i % 2 === 0,
-      delay: i * 0.08,
-    })), []
-  );
-
   return (
-    <section id="hero" className="relative min-h-[80vh] flex items-center justify-center overflow-hidden pt-16">
+    <section id="hero" className="relative min-h-[70vh] flex items-center justify-center overflow-hidden pt-16">
       <div className="absolute inset-0">
         <img
           src={profile.bannerImage}
@@ -24,69 +14,33 @@ const HeroSection = () => {
           loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/50 to-background" />
-        <div
-          className="absolute inset-0 opacity-20 animate-pulse-glow"
-          style={{
-            background: "radial-gradient(ellipse at 50% 50%, hsl(174 100% 50% / 0.15), transparent 60%)",
-          }}
-        />
       </div>
 
-      <div
-        className="absolute inset-0 pointer-events-none z-20"
-        style={{
-          background: "repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(174 100% 50% / 0.02) 2px, hsl(174 100% 50% / 0.02) 4px)",
-        }}
-      />
-
-      <div className="relative z-10 flex flex-col items-center gap-6 px-4 py-16">
-        <div className="relative">
-          <div
-            className="absolute -inset-2 rounded-full border-2 border-primary opacity-40 animate-spin-slow"
-            style={{ borderStyle: "dashed" }}
+      <div className="relative z-10 flex flex-col items-center gap-5 px-4 py-12">
+        <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-primary neon-border-cyan animate-fade-in">
+          <img
+            src={profile.profileImage}
+            alt={profile.name}
+            className="w-full h-full object-cover"
           />
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, type: "spring" }}
-            className="w-36 h-36 rounded-full overflow-hidden border-2 border-primary neon-border-cyan relative"
-          >
-            <img
-              src={profile.profileImage}
-              alt={profile.name}
-              className="w-full h-full object-cover"
-            />
-          </motion.div>
         </div>
 
-        <motion.h1
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="text-4xl md:text-6xl font-display font-bold tracking-wider neon-text-cyan text-center"
-        >
+        <h1 className="text-3xl md:text-5xl font-display font-bold tracking-wider neon-text-cyan text-center animate-fade-in">
           {profile.name}
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="text-muted-foreground text-lg max-w-md text-center font-light"
-        >
+        <p className="text-muted-foreground text-base max-w-md text-center font-light animate-fade-in">
           {profile.tagline}
-        </motion.p>
+        </p>
 
-        <div className="flex items-end gap-1 h-6 mt-2">
-          {bars.map(({ i, isCyan, delay }) => (
+        <div className="flex items-end gap-1 h-5 mt-1">
+          {[0, 1, 2, 3, 4].map((i) => (
             <div
               key={i}
               className="w-1 rounded-full animate-equalizer"
               style={{
-                background: isCyan
-                  ? "hsl(var(--neon-cyan))"
-                  : "hsl(var(--neon-magenta))",
-                animationDelay: `${delay}s`,
+                background: i % 2 === 0 ? "hsl(var(--neon-cyan))" : "hsl(var(--neon-magenta))",
+                animationDelay: `${i * 0.15}s`,
               }}
             />
           ))}
