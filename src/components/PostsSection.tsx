@@ -1,12 +1,10 @@
-import { motion } from "framer-motion";
-import { ExternalLink, MessageSquare, Download } from "lucide-react";
+import { useMemo } from "react";
+import { MessageSquare, Download } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
 import PostInteractions from "./PostInteractions";
 
 const PostsSection = () => {
   const { data } = useSite();
-
-  if (data.posts.length === 0) return null;
 
   const extractFirstUrl = (text: string): string | null => {
     const match = text.match(/(https?:\/\/[^\s]+)/);
@@ -33,104 +31,81 @@ const PostsSection = () => {
     );
   };
 
+  const posts = useMemo(() => data.posts, [data.posts]);
+
+  if (posts.length === 0) return null;
+
   return (
     <section id="posts" className="px-4 py-12 max-w-lg mx-auto">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        className="flex items-center justify-center gap-3 mb-8"
-      >
-        <motion.div
-          animate={{ rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-        >
-          <MessageSquare className="w-5 h-5 text-secondary" />
-        </motion.div>
+      <div className="flex items-center justify-center gap-3 mb-8 animate-fade-in">
+        <MessageSquare className="w-5 h-5 text-secondary animate-pulse-glow" />
         <h2 className="font-display text-xl tracking-widest neon-text-magenta text-center">
           NOVEDADES
         </h2>
-        <motion.div
-          animate={{ rotate: [0, -10, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3, delay: 1 }}
-        >
-          <MessageSquare className="w-5 h-5 text-secondary" />
-        </motion.div>
-      </motion.div>
+        <MessageSquare className="w-5 h-5 text-secondary animate-pulse-glow" />
+      </div>
 
       <div className="flex flex-col gap-5">
-        {data.posts.map((post, index) => {
+        {posts.map((post) => {
           const firstUrl = extractFirstUrl(post.content);
           const hasImageAndLink = !!post.image && !!firstUrl;
+          const hasImage = !!post.image;
 
           return (
-            <motion.div
+            <div
               key={post.id}
-              initial={{ y: 40, opacity: 0, scale: 0.92 }}
-              whileInView={{ y: 0, opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.12, type: "spring", stiffness: 90, damping: 15 }}
-              whileHover={{
-                boxShadow: "0 0 25px hsl(320 100% 60% / 0.35), 0 0 50px hsl(174 100% 50% / 0.15)",
-              }}
-              className="glass rounded-xl overflow-hidden border border-border hover:border-secondary/50 transition-all duration-500 group relative neon-border-animated neon-border-animated-subtle"
+              className="glass rounded-xl overflow-hidden border border-border hover:border-secondary/50 transition-all duration-300 group relative neon-border-animated neon-border-animated-subtle animate-fade-in"
             >
-              {/* Animated gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-              
-              {/* Scan lines */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none overflow-hidden">
-                <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,hsl(320_100%_60%/0.02)_2px,hsl(320_100%_60%/0.02)_4px)]" />
-              </div>
-
-              {/* Image with download-style link disguise */}
-              {post.image && (
-                <div className="relative overflow-hidden">
+              {/* Image - shows FULL, no crop, no opacity overlay */}
+              {hasImage && (
+                <div className="relative">
                   {hasImageAndLink ? (
                     <a href={firstUrl!} target="_blank" rel="noopener noreferrer" className="block relative">
-                      <motion.img
+                      <img
                         src={post.image}
                         alt=""
-                        className="w-full h-52 object-cover group-hover:scale-105 group-hover:brightness-110 transition-all duration-700"
+                        className="w-full h-auto object-contain bg-black/20 group-hover:brightness-110 transition-all duration-500"
                         loading="lazy"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-card/20 to-transparent" />
-                      {/* Download-style badge */}
-                      <motion.div
-                        className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border border-primary/60 text-primary shadow-[0_0_12px_hsl(174_100%_50%/0.3)]"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.3 }}
-                        whileHover={{ scale: 1.1 }}
-                      >
+                      {/* Download badge */}
+                      <div className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border border-primary/60 text-primary shadow-[0_0_12px_hsl(174_100%_50%/0.3)] animate-fade-in">
                         <Download className="w-3.5 h-3.5" />
                         <span className="text-[10px] font-display tracking-wider font-bold">DESCARGAR</span>
-                      </motion.div>
+                      </div>
                       {/* Bottom download bar */}
-                      <motion.div
-                        className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 py-2 bg-primary/20 backdrop-blur-sm border-t border-primary/30"
-                        initial={{ y: 10, opacity: 0 }}
-                        whileInView={{ y: 0, opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.4 }}
-                      >
+                      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 py-2 bg-primary/20 backdrop-blur-sm border-t border-primary/30">
                         <Download className="w-3 h-3 text-primary" />
                         <span className="text-[10px] font-display tracking-widest text-primary">TOCA PARA DESCARGAR</span>
-                      </motion.div>
+                      </div>
                     </a>
                   ) : (
-                    <div className="relative">
-                      <motion.img
-                        src={post.image}
-                        alt=""
-                        className="w-full h-52 object-cover group-hover:scale-105 group-hover:brightness-110 transition-all duration-700"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
-                    </div>
+                    <img
+                      src={post.image}
+                      alt=""
+                      className="w-full h-auto object-contain bg-black/20 group-hover:brightness-110 transition-all duration-500"
+                      loading="lazy"
+                    />
                   )}
                 </div>
+              )}
+
+              {/* If NO image but has a link — show a mini download thumbnail card */}
+              {!hasImage && firstUrl && (
+                <a
+                  href={firstUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 mx-4 mt-4 rounded-lg bg-primary/10 border border-primary/30 hover:border-primary/60 transition-all group/dl"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0 group-hover/dl:bg-primary/30 transition-colors">
+                    <Download className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-display tracking-wide text-primary truncate">DESCARGAR</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{firstUrl}</p>
+                  </div>
+                  <Download className="w-4 h-4 text-primary animate-pulse-glow shrink-0" />
+                </a>
               )}
 
               <div className="relative p-4">
@@ -150,26 +125,17 @@ const PostsSection = () => {
                     {new Date(post.createdAt).toLocaleTimeString("es", {
                       hour: "2-digit",
                       minute: "2-digit",
+                      hour12: true,
                     })}
                   </p>
-                  <motion.div
-                    className="w-1.5 h-1.5 rounded-full bg-secondary"
-                    animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.2, 0.8] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  />
+                  <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse-glow" />
                 </div>
                 <PostInteractions postId={post.id} />
               </div>
 
               {/* Bottom neon line */}
-              <motion.div
-                className="h-[2px] bg-gradient-to-r from-transparent via-secondary to-transparent"
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 + 0.3, duration: 0.8 }}
-              />
-            </motion.div>
+              <div className="h-[2px] bg-gradient-to-r from-transparent via-secondary to-transparent" />
+            </div>
           );
         })}
       </div>
