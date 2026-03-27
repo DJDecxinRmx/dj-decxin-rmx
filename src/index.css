@@ -88,71 +88,42 @@
   }
 
   .glass {
-    background: hsl(240 12% 8% / 0.7);
-    backdrop-filter: blur(16px);
+    background: hsl(240 12% 8% / 0.85);
     border: 1px solid hsl(240 10% 18% / 0.5);
   }
 
   .animated-gradient-border {
-    background: linear-gradient(var(--angle, 0deg), hsl(var(--neon-cyan)), hsl(var(--neon-magenta)), hsl(var(--neon-cyan)));
-    animation: rotate-gradient 4s linear infinite;
+    background: linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-magenta)), hsl(var(--neon-cyan)));
   }
 
-  @keyframes rotate-gradient {
-    to { --angle: 360deg; }
-  }
-
-  @property --angle {
-    syntax: "<angle>";
-    initial-value: 0deg;
-    inherits: false;
-  }
-
-  @property --border-angle {
-    syntax: "<angle>";
-    initial-value: 0deg;
-    inherits: false;
-  }
-
-  @keyframes spin-border {
-    to { --border-angle: 360deg; }
-  }
 
   .neon-border-animated {
-    position: relative;
-    overflow: visible;
+    box-shadow: 0 0 8px hsl(174 100% 50% / 0.4), inset 0 0 8px hsl(174 100% 50% / 0.05);
+    border-color: hsl(174 100% 50% / 0.5);
   }
 
-  .neon-border-animated::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    padding: 2px;
-    background: conic-gradient(
-      from var(--border-angle),
-      transparent 20%,
-      hsl(174 100% 50% / 1) 50%,
-      transparent 80%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: spin-border 3s linear infinite;
-    pointer-events: none;
-    will-change: --border-angle;
-    z-index: 0;
-    filter: drop-shadow(0 0 6px hsl(174 100% 50% / 0.7));
+  .neon-border-animated:hover {
+    box-shadow: 0 0 16px hsl(174 100% 50% / 0.6), inset 0 0 12px hsl(174 100% 50% / 0.08);
+    border-color: hsl(174 100% 50% / 0.7);
   }
 
-  .neon-border-animated-subtle::before {
-    background: conic-gradient(
-      from var(--border-angle),
-      transparent 25%,
-      hsl(174 100% 50% / 0.9) 50%,
-      transparent 75%
-    );
-    filter: drop-shadow(0 0 4px hsl(174 100% 50% / 0.5));
+  .neon-border-animated-subtle {
+    box-shadow: 0 0 6px hsl(174 100% 50% / 0.3);
+    border-color: hsl(174 100% 50% / 0.4);
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out both;
   }
 
 
