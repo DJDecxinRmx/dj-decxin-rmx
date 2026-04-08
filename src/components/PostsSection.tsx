@@ -3,6 +3,13 @@ import { MessageSquare, Download } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
 import PostInteractions from "./PostInteractions";
 
+const YOUTUBE_REGEX = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})(?:[^\s]*)?/;
+
+const getYouTubeId = (url: string): string | null => {
+  const match = url.match(YOUTUBE_REGEX);
+  return match ? match[1] : null;
+};
+
 const PostsSection = () => {
   const { data } = useSite();
 
@@ -51,11 +58,27 @@ const PostsSection = () => {
           const hasImageAndLink = !!post.image && !!firstUrl;
           const hasImage = !!post.image;
 
+          const youtubeId = firstUrl ? getYouTubeId(firstUrl) : null;
+
           return (
             <div
               key={post.id}
               className="glass rounded-xl overflow-hidden border border-border hover:border-secondary/50 transition-all duration-300 group relative neon-border-animated neon-border-animated-subtle animate-fade-in"
             >
+              {/* YouTube embed */}
+              {youtubeId && (
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                  <iframe
+                    src={`https://www.youtube.com/embed/${youtubeId}`}
+                    title="YouTube video"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full"
+                  />
+                </div>
+              )}
+
               {/* Image - shows FULL, no crop, no opacity overlay */}
               {hasImage && (
                 <div className="relative">
@@ -79,8 +102,8 @@ const PostsSection = () => {
                 </div>
               )}
 
-              {/* If NO image but has a link — show a mini download thumbnail card */}
-              {!hasImage && firstUrl && (
+              {/* If NO image, no YouTube, but has a link — show download card */}
+              {!hasImage && !youtubeId && firstUrl && (
                 <a
                   href={firstUrl}
                   target="_blank"
