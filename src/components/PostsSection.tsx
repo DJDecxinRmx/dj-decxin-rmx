@@ -3,6 +3,13 @@ import { MessageSquare, Download } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
 import PostInteractions from "./PostInteractions";
 
+const YOUTUBE_REGEX = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})(?:[^\s]*)?/;
+
+const getYouTubeId = (url: string): string | null => {
+  const match = url.match(YOUTUBE_REGEX);
+  return match ? match[1] : null;
+};
+
 const PostsSection = () => {
   const { data } = useSite();
 
