@@ -60,23 +60,13 @@ const PostsSection = () => {
               {hasImage && (
                 <div className="relative">
                   {hasImageAndLink ? (
-                    <a href={firstUrl!} target="_blank" rel="noopener noreferrer" className="block relative">
+                    <a href={firstUrl!} target="_blank" rel="noopener noreferrer" className="block">
                       <img
                         src={post.image}
                         alt=""
                         className="w-full h-auto object-contain bg-black/20 group-hover:brightness-110 transition-all duration-500"
                         loading="lazy"
                       />
-                      {/* Download badge */}
-                      <div className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border border-primary/60 text-primary shadow-[0_0_12px_hsl(174_100%_50%/0.3)] animate-fade-in">
-                        <Download className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-display tracking-wider font-bold">DESCARGAR</span>
-                      </div>
-                      {/* Bottom download bar */}
-                      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 py-2 bg-primary/20 backdrop-blur-sm border-t border-primary/30">
-                        <Download className="w-3 h-3 text-primary" />
-                        <span className="text-[10px] font-display tracking-widest text-primary">TOCA PARA DESCARGAR</span>
-                      </div>
                     </a>
                   ) : (
                     <img
