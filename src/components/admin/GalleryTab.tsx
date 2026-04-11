@@ -17,16 +17,26 @@ const GalleryTab = ({ uploading, setUploading }: Props) => {
   const [alt, setAlt] = useState("");
   const [desc, setDesc] = useState("");
   const [link, setLink] = useState("");
+  const [preview, setPreview] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setSelectedFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setPreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return;
     setUploading(true);
     try {
-      const url = await uploadFile(file, "site-assets", `gallery/${Date.now()}-${file.name}`);
+      const url = await uploadFile(selectedFile, "site-assets", `gallery/${Date.now()}-${selectedFile.name}`);
       await addGalleryImage(url, alt || "Foto", desc || undefined, link || undefined);
-      setAlt(""); setDesc(""); setLink("");
+      setAlt(""); setDesc(""); setLink(""); setPreview(null); setSelectedFile(null);
       if (fileRef.current) fileRef.current.value = "";
     } finally { setUploading(false); }
   };
@@ -37,13 +47,28 @@ const GalleryTab = ({ uploading, setUploading }: Props) => {
       <AnimatePresence>
         {formOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden space-y-3">
-            <input value={alt} onChange={(e) => setAlt(e.target.value)} placeholder="Nombre / título (opcional)" className={inputClass} />
-            <textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Descripción (opcional)" rows={2} className={`${inputClass} resize-none`} />
-            <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="Enlace (opcional, https://...)" className={inputClass} />
-            <button onClick={() => fileRef.current?.click()} disabled={uploading} className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-display tracking-wide text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 shadow-[0_0_15px_hsl(174_100%_50%/0.2)]">
-              <Upload className="w-4 h-4" /> SELECCIONAR Y SUBIR
+            <label className="text-[10px] text-muted-foreground font-display tracking-wide">SELECCIONAR IMAGEN</label>
+            <button onClick={() => fileRef.current?.click()} className="w-full py-6 rounded-lg border-2 border-dashed border-border hover:border-primary/50 bg-muted/30 flex flex-col items-center justify-center gap-2 transition-colors active:bg-primary/10">
+              {preview ? (
+                <img src={preview} alt="Preview" className="w-full h-32 object-cover rounded-md" />
+              ) : (
+                <>
+                  <Upload className="w-6 h-6 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Toca para elegir foto</span>
+                </>
+              )}
             </button>
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleSelectFile} />
+            {preview && (
+              <>
+                <input value={alt} onChange={(e) => setAlt(e.target.value)} placeholder="Nombre / título (opcional)" className={inputClass} />
+                <textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Descripción (opcional)" rows={2} className={`${inputClass} resize-none`} />
+                <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="Enlace (opcional, https://...)" className={inputClass} />
+                <button onClick={handleUpload} disabled={uploading} className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-display tracking-wide text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 shadow-[0_0_15px_hsl(174_100%_50%/0.2)]">
+                  <Upload className="w-4 h-4" /> SUBIR FOTO
+                </button>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

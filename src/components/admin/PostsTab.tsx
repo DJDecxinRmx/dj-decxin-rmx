@@ -89,16 +89,20 @@ const PostsTab = ({ uploading, setUploading }: Props) => {
             <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Escribe un texto, anuncio o pega un enlace..." rows={3} className={`${inputClass} resize-none`} />
             <div>
               <label className="text-[10px] text-muted-foreground font-display tracking-wide mb-1 block">IMAGEN (OPCIONAL)</label>
-              {imageUrl && (
-                <div className="relative mb-2">
-                  <img src={imageUrl} alt="Preview" className="w-full h-28 object-cover rounded-lg border border-primary/20" />
-                  <button onClick={() => { setImageUrl(null); setImageFile(null); if (imageRef.current) imageRef.current.value = ""; }} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center">
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              )}
-              <button onClick={() => imageRef.current?.click()} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted border border-border text-xs text-foreground hover:border-primary transition-colors">
-                <Upload className="w-3 h-3" /> Subir foto
+              <button onClick={() => imageRef.current?.click()} className="w-full py-4 rounded-lg border-2 border-dashed border-border hover:border-primary/50 bg-muted/30 flex flex-col items-center justify-center gap-2 transition-colors active:bg-primary/10 relative">
+                {imageUrl ? (
+                  <>
+                    <img src={imageUrl} alt="Preview" className="w-full h-28 object-cover rounded-md" />
+                    <button onClick={(e) => { e.stopPropagation(); setImageUrl(null); setImageFile(null); if (imageRef.current) imageRef.current.value = ""; }} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-5 h-5 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Toca para elegir foto</span>
+                  </>
+                )}
               </button>
               <input ref={imageRef} type="file" accept="image/*" className="hidden" onChange={(e) => selectImage(e, setImageFile, setImageUrl)} />
             </div>
@@ -121,16 +125,20 @@ const PostsTab = ({ uploading, setUploading }: Props) => {
                     <textarea value={editContent} onChange={(e) => setEditContent(e.target.value)} rows={4} className={`${inputClass} resize-none !text-xs`} />
                     <div>
                       <label className="text-[10px] text-muted-foreground font-display tracking-wide mb-1 block">CAMBIAR IMAGEN (OPCIONAL)</label>
-                      {editImagePreview && (
-                        <div className="relative mb-2">
-                          <img src={editImagePreview} alt="Preview" className="w-full h-20 object-cover rounded-lg border border-primary/20" />
-                          <button onClick={() => { setEditImageFile(null); setEditImagePreview(null); if (editImageRef.current) editImageRef.current.value = ""; }} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center">
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      )}
-                      <button onClick={() => editImageRef.current?.click()} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted border border-border text-xs text-foreground hover:border-primary transition-colors">
-                        <Upload className="w-3 h-3" /> Subir nueva imagen
+                      <button onClick={() => editImageRef.current?.click()} className="w-full py-3 rounded-lg border-2 border-dashed border-border hover:border-primary/50 bg-muted/30 flex flex-col items-center justify-center gap-2 transition-colors active:bg-primary/10 relative">
+                        {editImagePreview ? (
+                          <>
+                            <img src={editImagePreview} alt="Preview" className="w-full h-20 object-cover rounded-md" />
+                            <button onClick={(e) => { e.stopPropagation(); setEditImageFile(null); setEditImagePreview(null); if (editImageRef.current) editImageRef.current.value = ""; }} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center">
+                              <X className="w-3 h-3" />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">Toca para elegir</span>
+                          </>
+                        )}
                       </button>
                       <input ref={editImageRef} type="file" accept="image/*" className="hidden" onChange={(e) => selectImage(e, setEditImageFile, setEditImagePreview)} />
                     </div>
