@@ -51,23 +51,29 @@ const ProfileTab = ({ uploading, setUploading }: Props) => {
             </div>
             <div>
               <label className="text-[10px] text-muted-foreground font-display tracking-wide">FOTO DE PERFIL</label>
-              <div className="mt-1 flex items-center gap-3">
-                {data.profile.profileImage && <img src={data.profile.profileImage} alt="Perfil" className="w-14 h-14 rounded-full object-cover border-2 border-primary/30" />}
-                <button onClick={() => profileFileRef.current?.click()} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted border border-border text-xs text-foreground hover:border-primary transition-colors">
-                  <Upload className="w-3 h-3" /> Subir
-                </button>
-                <input ref={profileFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, "profileImage", "profile")} />
-              </div>
+              <button onClick={() => profileFileRef.current?.click()} className="mt-1 w-full py-4 rounded-lg border-2 border-dashed border-border hover:border-primary/50 bg-muted/30 flex items-center justify-center gap-3 transition-colors active:bg-primary/10">
+                {data.profile.profileImage ? (
+                  <img src={data.profile.profileImage} alt="Perfil" className="w-14 h-14 rounded-full object-cover border-2 border-primary/30" />
+                ) : (
+                  <Upload className="w-5 h-5 text-muted-foreground" />
+                )}
+                <span className="text-xs text-muted-foreground">Toca para cambiar</span>
+              </button>
+              <input ref={profileFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, "profileImage", "profile")} />
             </div>
             <div>
               <label className="text-[10px] text-muted-foreground font-display tracking-wide">BANNER</label>
-              <div className="mt-1 space-y-2">
-                {data.profile.bannerImage && <img src={data.profile.bannerImage} alt="Banner" className="w-full h-20 rounded-lg object-cover border border-primary/20" />}
-                <button onClick={() => bannerFileRef.current?.click()} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted border border-border text-xs text-foreground hover:border-primary transition-colors">
-                  <Upload className="w-3 h-3" /> Subir banner
-                </button>
-                <input ref={bannerFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, "bannerImage", "banner")} />
-              </div>
+              <button onClick={() => bannerFileRef.current?.click()} className="mt-1 w-full py-4 rounded-lg border-2 border-dashed border-border hover:border-primary/50 bg-muted/30 flex flex-col items-center justify-center gap-2 transition-colors active:bg-primary/10">
+                {data.profile.bannerImage ? (
+                  <img src={data.profile.bannerImage} alt="Banner" className="w-full h-20 rounded-lg object-cover" />
+                ) : (
+                  <>
+                    <Upload className="w-5 h-5 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Toca para subir banner</span>
+                  </>
+                )}
+              </button>
+              <input ref={bannerFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, "bannerImage", "banner")} />
             </div>
             <button onClick={handleSave} disabled={uploading} className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-display tracking-wide text-xs hover:opacity-90 transition-opacity disabled:opacity-50 shadow-[0_0_15px_hsl(174_100%_50%/0.2)]">
               GUARDAR PERFIL
