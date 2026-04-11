@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Image, Upload, Trash2 } from "lucide-react";
+import { Plus, Image, Upload, Trash2, Camera } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
 import { uploadFile } from "@/lib/supabase-helpers";
 import { SectionHeader, inputClass } from "./shared";
@@ -19,7 +19,6 @@ const GalleryTab = ({ uploading, setUploading }: Props) => {
   const [link, setLink] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const handleSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -37,7 +36,6 @@ const GalleryTab = ({ uploading, setUploading }: Props) => {
       const url = await uploadFile(selectedFile, "site-assets", `gallery/${Date.now()}-${selectedFile.name}`);
       await addGalleryImage(url, alt || "Foto", desc || undefined, link || undefined);
       setAlt(""); setDesc(""); setLink(""); setPreview(null); setSelectedFile(null);
-      if (fileRef.current) fileRef.current.value = "";
     } finally { setUploading(false); }
   };
 
@@ -47,18 +45,18 @@ const GalleryTab = ({ uploading, setUploading }: Props) => {
       <AnimatePresence>
         {formOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden space-y-3">
-            <label className="text-[10px] text-muted-foreground font-display tracking-wide">SELECCIONAR IMAGEN</label>
-            <button onClick={() => fileRef.current?.click()} className="w-full py-6 rounded-lg border-2 border-dashed border-border hover:border-primary/50 bg-muted/30 flex flex-col items-center justify-center gap-2 transition-colors active:bg-primary/10">
+            <span className="text-[10px] text-muted-foreground font-display tracking-wide">SELECCIONAR IMAGEN</span>
+            <label className="w-full py-6 rounded-lg border-2 border-dashed border-border active:border-primary/50 bg-muted/30 flex flex-col items-center justify-center gap-2 transition-colors active:bg-primary/10 cursor-pointer block">
               {preview ? (
                 <img src={preview} alt="Preview" className="w-full h-32 object-cover rounded-md" />
               ) : (
                 <>
-                  <Upload className="w-6 h-6 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">Toca para elegir foto</span>
+                  <Camera className="w-6 h-6 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Toca para abrir galería</span>
                 </>
               )}
-            </button>
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleSelectFile} />
+              <input type="file" accept="image/*" className="hidden" onChange={handleSelectFile} />
+            </label>
             {preview && (
               <>
                 <input value={alt} onChange={(e) => setAlt(e.target.value)} placeholder="Nombre / título (opcional)" className={inputClass} />
