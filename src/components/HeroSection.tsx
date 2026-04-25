@@ -25,11 +25,11 @@ const HeroSection = () => {
           />
         </div>
 
-        <h1 className="text-2xl md:text-4xl font-display font-bold tracking-wider neon-text-cyan text-center animate-fade-in whitespace-nowrap inline-block px-4 py-2 rounded-lg border-2 neon-border-cyan">
+        <h1 className="text-xl md:text-3xl font-display font-bold tracking-wider neon-text-cyan text-center animate-fade-in whitespace-nowrap inline-block px-3 py-1.5 rounded-lg border-2 neon-border-cyan">
           {profile.name}
         </h1>
 
-        <p className="text-muted-foreground text-base max-w-md text-center font-light animate-fade-in">
+        <p className="text-foreground text-lg md:text-xl max-w-lg text-center font-medium animate-fade-in tracking-wide drop-shadow-[0_0_10px_hsl(var(--neon-magenta)/0.5)]">
           {profile.tagline}
         </p>
 
