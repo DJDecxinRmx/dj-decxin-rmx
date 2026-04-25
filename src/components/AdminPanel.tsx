@@ -9,7 +9,7 @@ import LinksTab from "./admin/LinksTab";
 import GalleryTab from "./admin/GalleryTab";
 import PostsTab from "./admin/PostsTab";
 
-const SITE_URL = "https://dj-decxin-showcase.lovable.app";
+const SITE_URL = "https://dj-decxin-rmx.lovable.app";
 
 const AdminPanel = () => {
   const { isAdmin, user, signOut } = useSite();
