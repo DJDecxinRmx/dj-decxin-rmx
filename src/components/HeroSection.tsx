@@ -25,7 +25,7 @@ const HeroSection = () => {
           />
         </div>
 
-        <h1 className="text-3xl md:text-5xl font-display font-bold tracking-wider neon-text-cyan text-center animate-fade-in whitespace-nowrap">
+        <h1 className="text-2xl md:text-4xl font-display font-bold tracking-wider neon-text-cyan text-center animate-fade-in whitespace-nowrap inline-block px-4 py-2 rounded-lg border-2 neon-border-cyan">
           {profile.name}
         </h1>
 
