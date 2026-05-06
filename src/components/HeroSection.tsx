@@ -33,18 +33,6 @@ const HeroSection = () => {
           {profile.tagline}
         </p>
 
-        <div className="flex items-end gap-1 h-5 mt-1">
-          {[0, 1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="w-1 rounded-full animate-equalizer"
-              style={{
-                background: i % 2 === 0 ? "hsl(var(--neon-cyan))" : "hsl(var(--neon-magenta))",
-                animationDelay: `${i * 0.15}s`,
-              }}
-            />
-          ))}
-        </div>
       </div>
     </section>
   );
