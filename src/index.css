@@ -35,7 +35,7 @@
     --popover: 240 12% 8%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 174 100% 50%;
+    --primary: var(--neon-hue) 100% 50%;
     --primary-foreground: 240 15% 5%;
 
     --secondary: 320 100% 60%;
@@ -52,7 +52,7 @@
 
     --border: 240 10% 18%;
     --input: 240 10% 18%;
-    --ring: 174 100% 50%;
+    --ring: var(--neon-hue) 100% 50%;
 
     --radius: 0.75rem;
 
