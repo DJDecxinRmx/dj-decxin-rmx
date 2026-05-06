@@ -21,7 +21,7 @@
 }
 
 :root {
-  animation: neon-hue-cycle 30s steps(6, jump-none) infinite;
+  animation: neon-hue-cycle 30s linear infinite;
 }
 
 @layer base {
