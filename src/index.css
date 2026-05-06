@@ -119,18 +119,18 @@
 
 
   .neon-border-animated {
-    box-shadow: 0 0 8px hsl(174 100% 50% / 0.4), inset 0 0 8px hsl(174 100% 50% / 0.05);
-    border-color: hsl(174 100% 50% / 0.5);
+    box-shadow: 0 0 8px hsl(var(--neon-hue) 100% 50% / 0.4), inset 0 0 8px hsl(var(--neon-hue) 100% 50% / 0.05);
+    border-color: hsl(var(--neon-hue) 100% 50% / 0.5);
   }
 
   .neon-border-animated:hover {
-    box-shadow: 0 0 16px hsl(174 100% 50% / 0.6), inset 0 0 12px hsl(174 100% 50% / 0.08);
-    border-color: hsl(174 100% 50% / 0.7);
+    box-shadow: 0 0 16px hsl(var(--neon-hue) 100% 50% / 0.6), inset 0 0 12px hsl(var(--neon-hue) 100% 50% / 0.08);
+    border-color: hsl(var(--neon-hue) 100% 50% / 0.7);
   }
 
   .neon-border-animated-subtle {
-    box-shadow: 0 0 6px hsl(174 100% 50% / 0.3);
-    border-color: hsl(174 100% 50% / 0.4);
+    box-shadow: 0 0 6px hsl(var(--neon-hue) 100% 50% / 0.3);
+    border-color: hsl(var(--neon-hue) 100% 50% / 0.4);
   }
 
   @keyframes slideIn {
