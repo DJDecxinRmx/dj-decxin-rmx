@@ -11,11 +11,10 @@
 }
 
 @keyframes neon-hue-cycle {
-  0%   { --neon-hue: 0; }
-  25%  { --neon-hue: 120; }
-  50%  { --neon-hue: 174; }
-  75%  { --neon-hue: 55; }
-  100% { --neon-hue: 0; }
+  0%   { --neon-hue: 120; }
+  33%  { --neon-hue: 174; }
+  66%  { --neon-hue: 55; }
+  100% { --neon-hue: 120; }
 }
 
 :root {
