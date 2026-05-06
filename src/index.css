@@ -64,12 +64,12 @@
 
     --sidebar-background: 240 15% 5%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 174 100% 50%;
+    --sidebar-primary: var(--neon-hue) 100% 50%;
     --sidebar-primary-foreground: 240 15% 5%;
     --sidebar-accent: 240 10% 14%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 240 10% 18%;
-    --sidebar-ring: 174 100% 50%;
+    --sidebar-ring: var(--neon-hue) 100% 50%;
   }
 }
 
