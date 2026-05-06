@@ -12,16 +12,16 @@
 
 @keyframes neon-hue-cycle {
   0%   { --neon-hue: 174; }
-  16%  { --neon-hue: 280; }
-  33%  { --neon-hue: 320; }
+  16.66% { --neon-hue: 280; }
+  33.33% { --neon-hue: 320; }
   50%  { --neon-hue: 0; }
-  66%  { --neon-hue: 45; }
-  83%  { --neon-hue: 120; }
+  66.66% { --neon-hue: 45; }
+  83.33% { --neon-hue: 120; }
   100% { --neon-hue: 174; }
 }
 
 :root {
-  animation: neon-hue-cycle 60s linear infinite;
+  animation: neon-hue-cycle 30s steps(6, jump-none) infinite;
 }
 
 @layer base {
