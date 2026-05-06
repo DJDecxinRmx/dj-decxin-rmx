@@ -4,6 +4,26 @@
 @tailwind components;
 @tailwind utilities;
 
+@property --neon-hue {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 174;
+}
+
+@keyframes neon-hue-cycle {
+  0%   { --neon-hue: 174; }
+  16%  { --neon-hue: 280; }
+  33%  { --neon-hue: 320; }
+  50%  { --neon-hue: 0; }
+  66%  { --neon-hue: 45; }
+  83%  { --neon-hue: 120; }
+  100% { --neon-hue: 174; }
+}
+
+:root {
+  animation: neon-hue-cycle 60s linear infinite;
+}
+
 @layer base {
   :root {
     --background: 240 15% 5%;
@@ -15,7 +35,7 @@
     --popover: 240 12% 8%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 174 100% 50%;
+    --primary: var(--neon-hue) 100% 50%;
     --primary-foreground: 240 15% 5%;
 
     --secondary: 320 100% 60%;
@@ -32,23 +52,24 @@
 
     --border: 240 10% 18%;
     --input: 240 10% 18%;
-    --ring: 174 100% 50%;
+    --ring: var(--neon-hue) 100% 50%;
 
     --radius: 0.75rem;
 
-    --neon-cyan: 174 100% 50%;
+    --neon-hue: 174;
+    --neon-cyan: var(--neon-hue) 100% 50%;
     --neon-magenta: 320 100% 60%;
-    --neon-glow-cyan: 0 0 20px hsl(174 100% 50% / 0.6), 0 0 60px hsl(174 100% 50% / 0.2);
+    --neon-glow-cyan: 0 0 20px hsl(var(--neon-hue) 100% 50% / 0.6), 0 0 60px hsl(var(--neon-hue) 100% 50% / 0.2);
     --neon-glow-magenta: 0 0 20px hsl(320 100% 60% / 0.6), 0 0 60px hsl(320 100% 60% / 0.2);
 
     --sidebar-background: 240 15% 5%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 174 100% 50%;
+    --sidebar-primary: var(--neon-hue) 100% 50%;
     --sidebar-primary-foreground: 240 15% 5%;
     --sidebar-accent: 240 10% 14%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 240 10% 18%;
-    --sidebar-ring: 174 100% 50%;
+    --sidebar-ring: var(--neon-hue) 100% 50%;
   }
 }
 
@@ -98,18 +119,18 @@
 
 
   .neon-border-animated {
-    box-shadow: 0 0 8px hsl(174 100% 50% / 0.4), inset 0 0 8px hsl(174 100% 50% / 0.05);
-    border-color: hsl(174 100% 50% / 0.5);
+    box-shadow: 0 0 8px hsl(var(--neon-hue) 100% 50% / 0.4), inset 0 0 8px hsl(var(--neon-hue) 100% 50% / 0.05);
+    border-color: hsl(var(--neon-hue) 100% 50% / 0.5);
   }
 
   .neon-border-animated:hover {
-    box-shadow: 0 0 16px hsl(174 100% 50% / 0.6), inset 0 0 12px hsl(174 100% 50% / 0.08);
-    border-color: hsl(174 100% 50% / 0.7);
+    box-shadow: 0 0 16px hsl(var(--neon-hue) 100% 50% / 0.6), inset 0 0 12px hsl(var(--neon-hue) 100% 50% / 0.08);
+    border-color: hsl(var(--neon-hue) 100% 50% / 0.7);
   }
 
   .neon-border-animated-subtle {
-    box-shadow: 0 0 6px hsl(174 100% 50% / 0.3);
-    border-color: hsl(174 100% 50% / 0.4);
+    box-shadow: 0 0 6px hsl(var(--neon-hue) 100% 50% / 0.3);
+    border-color: hsl(var(--neon-hue) 100% 50% / 0.4);
   }
 
   @keyframes slideIn {
