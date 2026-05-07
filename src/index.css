@@ -17,7 +17,7 @@
   100% { --neon-hue: 120; }
 }
 
-:root {
+h1, h2 {
   animation: neon-hue-cycle 10s linear infinite;
 }
 
