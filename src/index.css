@@ -4,21 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
-@property --neon-hue {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 174;
-}
-
 @keyframes neon-hue-cycle {
-  0%   { --neon-hue: 120; }
-  33%  { --neon-hue: 174; }
-  66%  { --neon-hue: 55; }
-  100% { --neon-hue: 120; }
+  0%, 33%   { --neon-hue: 120; }
+  34%, 66%  { --neon-hue: 174; }
+  67%, 100% { --neon-hue: 55; }
 }
 
 h1, h2 {
-  animation: neon-hue-cycle 10s linear infinite;
+  animation: neon-hue-cycle 10s steps(1, end) infinite;
 }
 
 @layer base {
