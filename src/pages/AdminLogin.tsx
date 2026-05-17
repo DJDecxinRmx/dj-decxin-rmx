@@ -261,7 +261,7 @@ const AdminLogin = () => {
           ← Volver a la página
         </motion.button>
       </motion.div>
-    </div>
+    </main>
   );
 };
 
