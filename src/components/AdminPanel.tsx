@@ -37,8 +37,9 @@ const AdminPanel = () => {
         onClick={() => navigate("/admin-login")}
         className="fixed top-4 left-4 z-50 w-10 h-10 rounded-full bg-primary/20 border border-primary text-primary flex items-center justify-center hover:bg-primary/30 transition-colors"
         title="Admin"
+        aria-label="Administración"
       >
-        <Settings className="w-5 h-5" />
+        <Settings className="w-5 h-5" aria-hidden="true" />
       </button>
     );
   }
@@ -48,8 +49,10 @@ const AdminPanel = () => {
       <button
         onClick={() => setIsOpen((v) => !v)}
         className="fixed top-4 left-4 z-50 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center transition-transform active:scale-90"
+        aria-label={isOpen ? "Cerrar panel admin" : "Abrir panel admin"}
+        aria-expanded={isOpen}
       >
-        {isOpen ? <X className="w-5 h-5" /> : <Settings className="w-5 h-5" />}
+        {isOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Settings className="w-5 h-5" aria-hidden="true" />}
       </button>
 
       {isOpen && (

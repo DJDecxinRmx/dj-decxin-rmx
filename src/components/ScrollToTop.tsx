@@ -19,9 +19,10 @@ const ScrollToTop = () => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Volver arriba"
           className="fixed bottom-6 left-6 z-50 w-10 h-10 rounded-full bg-muted border border-border flex items-center justify-center text-primary hover:neon-border-cyan transition-all"
         >
-          <ChevronUp className="w-5 h-5" />
+          <ChevronUp className="w-5 h-5" aria-hidden="true" />
         </motion.button>
       )}
     </AnimatePresence>

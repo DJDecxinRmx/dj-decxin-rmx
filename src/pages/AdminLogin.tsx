@@ -203,8 +203,10 @@ const AdminLogin = () => {
             transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
           >
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <label htmlFor="admin-password" className="sr-only">Contraseña</label>
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
               <input
+                id="admin-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
