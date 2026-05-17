@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { MessageSquare, Download } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
+import { isValidHttpUrl } from "@/lib/url-validation";
 import PostInteractions from "./PostInteractions";
 
 const YOUTUBE_REGEX = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})(?:[^\s]*)?/;
@@ -22,7 +23,7 @@ const PostsSection = () => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = text.split(urlRegex);
     return parts.map((part, i) =>
-      urlRegex.test(part) ? (
+      urlRegex.test(part) && isValidHttpUrl(part) ? (
         <a
           key={i}
           href={part}

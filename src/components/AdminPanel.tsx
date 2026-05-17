@@ -9,7 +9,7 @@ import LinksTab from "./admin/LinksTab";
 import GalleryTab from "./admin/GalleryTab";
 import PostsTab from "./admin/PostsTab";
 
-const SITE_URL = "https://dj-decxin-rmx.lovable.app";
+const SITE_URL = import.meta.env.VITE_SITE_URL || (typeof window !== "undefined" ? window.location.origin : "");
 
 const AdminPanel = () => {
   const { isAdmin, user, signOut } = useSite();

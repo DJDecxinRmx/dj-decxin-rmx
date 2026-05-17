@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Image, Upload, Trash2, Camera } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
 import { uploadFile } from "@/lib/supabase-helpers";
+import { isValidHttpUrl } from "@/lib/url-validation";
 import { SectionHeader, inputClass } from "./shared";
+import { toast } from "@/hooks/use-toast";
 
 interface Props {
   uploading: boolean;
@@ -31,6 +33,10 @@ const GalleryTab = ({ uploading, setUploading }: Props) => {
 
   const handleUpload = async () => {
     if (!selectedFile) return;
+    if (link && !isValidHttpUrl(link)) {
+      toast({ title: "Enlace inválido", description: "Solo se permiten URLs http:// o https://", variant: "destructive" });
+      return;
+    }
     setUploading(true);
     try {
       const url = await uploadFile(selectedFile, "site-assets", `gallery/${Date.now()}-${selectedFile.name}`);
