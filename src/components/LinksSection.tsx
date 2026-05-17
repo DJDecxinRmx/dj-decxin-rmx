@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link2, ExternalLink } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
+import { isValidHttpUrl } from "@/lib/url-validation";
 
 const LinksSection = () => {
   const { data } = useSite();
@@ -18,7 +19,7 @@ const LinksSection = () => {
         {links.map((link) => (
           <a
             key={link.id}
-            href={link.url}
+            href={isValidHttpUrl(link.url) ? link.url : "#"}
             target="_blank"
             rel="noopener noreferrer"
             className="glass rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_hsl(174_100%_50%/0.4)] border border-border hover:border-primary/50 group relative neon-border-animated neon-border-animated-subtle active:scale-[0.97] animate-fade-in"
