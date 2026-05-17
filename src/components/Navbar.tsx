@@ -57,7 +57,12 @@ const Navbar = () => {
           <EqualizerBars />
         </div>
 
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden text-primary">
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="md:hidden text-primary"
+          aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
+          aria-expanded={mobileOpen}
+        >
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>

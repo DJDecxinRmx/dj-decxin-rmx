@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet-async";
 import { Lock, Loader2, Disc3, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -67,7 +68,15 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+    <main className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+      <Helmet>
+        <title>Panel Admin | DJ Decxin Remix</title>
+        <meta name="description" content="Acceso administrativo al sitio oficial de DJ Decxin Rmx." />
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href="https://dj-decxin-rmx.lovable.app/admin-login" />
+        <meta property="og:title" content="Panel Admin | DJ Decxin Remix" />
+        <meta property="og:url" content="https://dj-decxin-rmx.lovable.app/admin-login" />
+      </Helmet>
       {/* Animated background effects */}
       <div className="absolute inset-0 pointer-events-none">
         <motion.div
@@ -194,8 +203,10 @@ const AdminLogin = () => {
             transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
           >
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <label htmlFor="admin-password" className="sr-only">Contraseña</label>
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
               <input
+                id="admin-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -252,7 +263,7 @@ const AdminLogin = () => {
           ← Volver a la página
         </motion.button>
       </motion.div>
-    </div>
+    </main>
   );
 };
 

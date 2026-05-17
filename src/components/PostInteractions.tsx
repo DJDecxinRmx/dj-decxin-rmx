@@ -48,9 +48,12 @@ const PostInteractions = ({ postId }: { postId: string }) => {
             onMouseEnter={() => setHover(heart)}
             onMouseLeave={() => setHover(0)}
             onClick={() => handleRate(heart)}
+            aria-label={`Calificar con ${heart} ${heart === 1 ? "corazón" : "corazones"}`}
+            aria-pressed={userRating === heart}
             className="p-0.5 transition-transform hover:scale-125 active:scale-140"
           >
             <Heart
+              aria-hidden="true"
               className={`w-4 h-4 transition-colors ${
                 (hover || userRating) >= heart
                   ? "text-primary fill-primary"
