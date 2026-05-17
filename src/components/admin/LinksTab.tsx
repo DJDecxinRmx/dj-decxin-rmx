@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Link2, Upload, X, Pencil, Save, Trash2 } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
 import { uploadFile } from "@/lib/supabase-helpers";
+import { isValidHttpUrl } from "@/lib/url-validation";
 import { SectionHeader, inputClass } from "./shared";
+import { toast } from "@/hooks/use-toast";
 
 interface Props {
   uploading: boolean;
@@ -43,6 +45,10 @@ const LinksTab = ({ uploading, setUploading }: Props) => {
 
   const handleAdd = async () => {
     if (!title || !url) return;
+    if (!isValidHttpUrl(url)) {
+      toast({ title: "URL inválida", description: "Solo se permiten URLs http:// o https://", variant: "destructive" });
+      return;
+    }
     setUploading(true);
     try {
       let imgUrl: string | undefined;
@@ -65,6 +71,10 @@ const LinksTab = ({ uploading, setUploading }: Props) => {
 
   const handleSaveEdit = async () => {
     if (!editId || !editTitle || !editUrl) return;
+    if (!isValidHttpUrl(editUrl)) {
+      toast({ title: "URL inválida", description: "Solo se permiten URLs http:// o https://", variant: "destructive" });
+      return;
+    }
     setUploading(true);
     try {
       let imgUrl: string | undefined;

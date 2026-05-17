@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { ExternalLink } from "lucide-react";
 import { useSite } from "@/context/SiteContext";
+import { isValidHttpUrl } from "@/lib/url-validation";
 
 const GallerySection = () => {
   const { data } = useSite();
@@ -11,7 +12,7 @@ const GallerySection = () => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = text.split(urlRegex);
     return parts.map((part, i) =>
-      urlRegex.test(part) ? (
+      urlRegex.test(part) && isValidHttpUrl(part) ? (
         <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:neon-text-cyan transition-all break-all">
           {part}
         </a>
@@ -48,7 +49,7 @@ const GallerySection = () => {
                     {renderText(img.description)}
                   </p>
                 )}
-                {img.link && (
+                {img.link && isValidHttpUrl(img.link) && (
                   <a href={img.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:neon-text-cyan mt-1 transition-all">
                     <ExternalLink className="w-3 h-3" /> Ver enlace
                   </a>
@@ -75,7 +76,7 @@ const GallerySection = () => {
                 {gallery[selected].description && (
                   <p className="text-sm text-foreground whitespace-pre-wrap">{renderText(gallery[selected].description!)}</p>
                 )}
-                {gallery[selected].link && (
+                {gallery[selected].link && isValidHttpUrl(gallery[selected].link!) && (
                   <a href={gallery[selected].link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:neon-text-cyan mt-2 transition-all">
                     <ExternalLink className="w-4 h-4" /> Abrir enlace
                   </a>
